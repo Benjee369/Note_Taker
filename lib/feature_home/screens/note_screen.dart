@@ -54,11 +54,15 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: TextWidget(text: 'Edit Note'),
           leading: Container(
+            // color: ,
+            padding: EdgeInsets.all(10),
             child: Icon(Icons.chevron_left_rounded),
           ),
           actions: [
