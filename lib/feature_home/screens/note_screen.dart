@@ -5,6 +5,8 @@ import 'package:notes/feature_home/providers/note_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../common/widgets/custom_app_bar.dart';
+
 class NoteScreen extends StatefulWidget {
   final NoteModel note;
   final bool? isNewNote;
@@ -58,19 +60,18 @@ class _NoteScreenState extends State<NoteScreen> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: TextWidget(text: 'Edit Note'),
-          leading: Container(
-            // color: ,
-            padding: EdgeInsets.all(10),
-            child: Icon(Icons.chevron_left_rounded),
-          ),
+        appBar: CustomAppBar(
+          title: 'Note',
+          buttonType: AppBarButtonType.backButton,
           actions: [
             IconButton(
               onPressed: () async {
                 noteController.text.isNotEmpty ? saveNote() : null;
               },
-              icon: Icon(Icons.check),
+              icon: Icon(
+                Icons.check,
+                size: 40,
+              ),
             ),
           ],
         ),
@@ -79,7 +80,12 @@ class _NoteScreenState extends State<NoteScreen> {
             Expanded(
               child: TextField(
                 controller: noteController,
-                decoration: InputDecoration.collapsed(hintText: ''),
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 3.0,
+                      horizontal: 10.0,
+                    ),
+                    border: InputBorder.none),
                 maxLines: 10,
               ),
             ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:notes/common/widgets/text_widget.dart';
 import 'package:notes/constants/app_colors.dart';
+import 'package:notes/constants/app_images.dart';
 import 'package:notes/constants/app_sizes.dart';
 import 'package:notes/feature_home/models/note_model.dart';
 import 'package:notes/feature_home/providers/note_provider.dart';
@@ -10,6 +12,7 @@ import 'package:notes/feature_home/widgets/note_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
+import '../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/custom_popup_menu.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigation.navigateTo(context, NoteScreen(note: note));
   }
 
-  void onLongPress(){
+  void onLongPress() {
     // CustomPopupMenu();
   }
 
@@ -52,30 +55,35 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () => createNewNote(),
           child: Icon(Icons.add),
         ),
+        appBar: CustomAppBar(
+          buttonType: AppBarButtonType.none,
+          title: 'Notes',
+        ),
         body: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.only(left: 15, top: 5),
-              child: InkWell(
-                onTap: () => context.read<NoteProvider>().getNotes(),
-                child: TextWidget(
-                  text: 'Notes',
-                  size: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             notes.isEmpty
                 ? Expanded(
+                  child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.eighteen_mp),
-                        Text('Add your first note'),
+                        SvgPicture.asset(
+                          AppImages.noNotes,
+                          width: 200,
+                          height: 200,
+                        ),
+                        gapH12,
+                        TextWidget(
+                          text: 'Add your first note',
+                          fontWeight: FontWeight.bold,
+                          size: 20,
+                        ),
                       ],
                     ),
-                  )
+                  ),
+                )
                 : Expanded(
                     child: ListView.separated(
                       padding: EdgeInsets.all(10),

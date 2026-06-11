@@ -23,11 +23,12 @@ class App extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: ThemeData(
               brightness: Brightness.light,
               scaffoldBackgroundColor: AppColors.white,
               colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blue,
+                seedColor:  AppColors.primaryColor,
                 brightness: Brightness.light,
               ),
               primaryColor: AppColors.black,
@@ -41,7 +42,7 @@ class App extends StatelessWidget {
               brightness: Brightness.dark,
               scaffoldBackgroundColor: AppColors.black,
               colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blue,
+                seedColor: AppColors.primaryColor,
                 brightness: Brightness.dark,
               ),
               primaryColor: AppColors.white,
