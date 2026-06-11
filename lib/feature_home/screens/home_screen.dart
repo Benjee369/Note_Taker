@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:notes/common/widgets/text_widget.dart';
-import 'package:notes/constants/app_colors.dart';
 import 'package:notes/constants/app_images.dart';
 import 'package:notes/constants/app_sizes.dart';
 import 'package:notes/feature_home/models/note_model.dart';
@@ -13,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
 import '../../common/widgets/custom_app_bar.dart';
-import '../../common/widgets/custom_popup_menu.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,12 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onLongPress() {
-    // CustomPopupMenu();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
+    // final size = MediaQuery.sizeOf(context);
     final notes = context.watch<NoteProvider>().notes;
 
     return SafeArea(

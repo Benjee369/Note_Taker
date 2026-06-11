@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../common/widgets/text_widget.dart';
-import '../../constants/app_colors.dart';
 import '../models/note_model.dart';
 
 class NoteWidget extends StatelessWidget {
@@ -20,7 +19,7 @@ class NoteWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final theme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    // final textTheme = Theme.of(context).textTheme;
 
     String formattedDate(DateTime date) {
       return DateFormat('dd-MM-yyyy').format(date);
@@ -43,7 +42,7 @@ class NoteWidget extends StatelessWidget {
               child: TextWidget(
                 text: note.content,
                 fontWeight: FontWeight.bold,
-                size: 20,
+                size: 18,
                 maxLines: 1,
                 overFlow: TextOverflow.ellipsis,
               ),

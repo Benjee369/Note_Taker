@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:notes/common/widgets/text_widget.dart';
-import '../../constants/app_colors.dart';
 
 enum AppBarButtonType {
   backButton,

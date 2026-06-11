@@ -1,10 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:notes/common/widgets/text_widget.dart';
 import 'package:notes/feature_home/models/note_model.dart';
 import 'package:notes/feature_home/providers/note_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../common/widgets/custom_app_bar.dart';
 
 class NoteScreen extends StatefulWidget {
@@ -18,45 +18,52 @@ class NoteScreen extends StatefulWidget {
 }
 
 class _NoteScreenState extends State<NoteScreen> {
-  late TextEditingController noteController;
-  final uuid = Uuid().v4();
+  late TextEditingController _noteController;
+  final _uuid = Uuid().v4();
+  Timer? _debouncer;
 
   Future saveNote() async {
     final isNew = widget.isNewNote == true;
     final now = DateTime.now();
 
     final note = NoteModel(
-      uuid: isNew ? uuid : widget.note.uuid,
+      uuid: isNew ? _uuid : widget.note.uuid,
       // title: title,
-      content: noteController.text,
+      content: _noteController.text,
       createdDate: isNew ? now : widget.note.createdDate,
       updatedDate: DateTime.now(),
     );
     await context.read<NoteProvider>().saveNote(note);
   }
 
+  void onTypingChange(String text) {
+    if (_debouncer?.isActive ?? false) _debouncer?.cancel();
+    _debouncer = Timer(const Duration(milliseconds: 1000), () {
+      saveNote();
+    });
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    noteController = TextEditingController();
+    _noteController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.isNewNote != true) {
-        noteController.text = widget.note.content;
+        _noteController.text = widget.note.content;
       }
     });
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
-    noteController.dispose();
+    _noteController.dispose();
+    _debouncer?.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    // final theme = Theme.of(context).colorScheme;
 
     return SafeArea(
       child: Scaffold(
@@ -66,7 +73,7 @@ class _NoteScreenState extends State<NoteScreen> {
           actions: [
             IconButton(
               onPressed: () async {
-                noteController.text.isNotEmpty ? saveNote() : null;
+                _noteController.text.isNotEmpty ? saveNote() : null;
               },
               icon: Icon(
                 Icons.check,
@@ -79,7 +86,8 @@ class _NoteScreenState extends State<NoteScreen> {
           children: [
             Expanded(
               child: TextField(
-                controller: noteController,
+                onChanged: (text) => onTypingChange(text),
+                controller: _noteController,
                 decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 3.0,
