@@ -4,15 +4,15 @@ import '../../common/widgets/text_widget.dart';
 import '../models/note_model.dart';
 
 class NoteWidget extends StatelessWidget {
-  final VoidCallback onTap;
-  final VoidCallback onLongPress;
+  // final VoidCallback onTap;
+  // final VoidCallback onLongPress;
   final NoteModel note;
 
   const NoteWidget({
     super.key,
-    required this.onTap,
+    // required this.onTap,
     required this.note,
-    required this.onLongPress,
+    // required this.onLongPress,
   });
 
   @override
@@ -25,30 +25,32 @@ class NoteWidget extends StatelessWidget {
       return DateFormat('dd-MM-yyyy').format(date);
     }
 
-    return GestureDetector(
-      onTap: onTap,
-      onLongPress: () {},
+    return Hero(
+      tag: 'note',
       child: Container(
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: theme.primary,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: size.width * 0.8,
-              child: TextWidget(
-                text: note.content,
-                fontWeight: FontWeight.bold,
-                size: 18,
-                maxLines: 1,
-                overFlow: TextOverflow.ellipsis,
+        child: Material(
+          color: theme.primary,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: size.width * 0.8,
+                child: TextWidget(
+                  text: note.content,
+                  fontWeight: FontWeight.bold,
+                  size: 18,
+                  maxLines: 1,
+                  overFlow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            TextWidget(text: formattedDate(note.createdDate)),
-          ],
+              TextWidget(text: formattedDate(note.createdDate)),
+            ],
+          ),
         ),
       ),
     );

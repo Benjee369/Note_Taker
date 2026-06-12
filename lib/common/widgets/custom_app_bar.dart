@@ -4,6 +4,7 @@ import 'package:notes/common/widgets/text_widget.dart';
 enum AppBarButtonType {
   backButton,
   closeButton,
+  menuButton,
   none,
 }
 
@@ -81,6 +82,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
+        );
+      case AppBarButtonType.menuButton:
+        return IconButton(
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          icon: Icon(Icons.menu),
         );
       case AppBarButtonType.none:
         return const SizedBox.shrink();

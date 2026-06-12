@@ -27,8 +27,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future getNotes() async {
-    context.read<NoteProvider>().getNotes();
-    Navigation.navigateAndReplace(context, HomeScreen());
+    await context.read<NoteProvider>().getNotes();
+    if (mounted) {
+      Navigation.navigateAndReplace(context, HomeScreen());
+    }
   }
 
   @override
@@ -36,19 +38,19 @@ class _SplashScreenState extends State<SplashScreen> {
     return SafeArea(
       child: Scaffold(
           body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                    SvgPicture.asset(
-            AppImages.splashImage,
-            height: 200,
-            width: 200,
-                    ),
-                    gapH12,
-                    TextWidget(text: 'Note Taker')
-                  ]),
-          )),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                AppImages.splashImage,
+                height: 200,
+                width: 200,
+              ),
+              gapH12,
+              TextWidget(text: 'Note Taker')
+            ]),
+      )),
     );
   }
 }

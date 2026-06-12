@@ -45,4 +45,9 @@ class NoteProvider with ChangeNotifier {
     _isGettingNotes = false;
     notifyListeners();
   }
+
+  Future deleteNote(String uuid) async {
+    await NoteDatabase().deleteNote(uuid);
+    getNotes();
+  }
 }

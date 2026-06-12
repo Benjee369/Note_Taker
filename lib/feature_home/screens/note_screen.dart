@@ -66,38 +66,41 @@ class _NoteScreenState extends State<NoteScreen> {
     // final theme = Theme.of(context).colorScheme;
 
     return SafeArea(
-      child: Scaffold(
-        appBar: CustomAppBar(
-          title: 'Note',
-          buttonType: AppBarButtonType.backButton,
-          actions: [
-            IconButton(
-              onPressed: () async {
-                _noteController.text.isNotEmpty ? saveNote() : null;
-              },
-              icon: Icon(
-                Icons.check,
-                size: 40,
+      child: Hero(
+        tag: 'note',
+        child: Scaffold(
+          appBar: CustomAppBar(
+            title: 'Note',
+            buttonType: AppBarButtonType.backButton,
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  _noteController.text.isNotEmpty ? saveNote() : null;
+                },
+                icon: Icon(
+                  Icons.check,
+                  size: 40,
+                ),
               ),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: TextField(
-                onChanged: (text) => onTypingChange(text),
-                controller: _noteController,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 3.0,
-                      horizontal: 10.0,
-                    ),
-                    border: InputBorder.none),
-                maxLines: 10,
+            ],
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: (text) => onTypingChange(text),
+                  controller: _noteController,
+                  decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 3.0,
+                        horizontal: 10.0,
+                      ),
+                      border: InputBorder.none),
+                  maxLines: 10,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
