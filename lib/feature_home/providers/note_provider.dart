@@ -46,6 +46,18 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future pinNote(NoteModel note) async {
+    final updatedNote = note.copyWith(pinned: true);
+    await NoteDatabase().saveNote(updatedNote);
+    getNotes();
+  }
+
+  Future unpinNote(NoteModel note) async {
+    final updatedNote = note.copyWith(pinned: false);
+    await NoteDatabase().saveNote(updatedNote);
+    getNotes();
+  }
+
   Future deleteNote(String uuid) async {
     await NoteDatabase().deleteNote(uuid);
     getNotes();

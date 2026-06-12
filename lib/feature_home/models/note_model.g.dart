@@ -7,17 +7,17 @@ part of 'note_model.dart';
 // **************************************************************************
 
 NoteModel _$NoteModelFromJson(Map<String, dynamic> json) => NoteModel(
-  uuid: json['uuid'] as String,
-  // title: json['title'] as String,
-  content: json['content'] as String,
-  createdDate: DateTime.parse(json['createdDate'] as String),
-  updatedDate: DateTime.parse(json['updatedDate'] as String),
-);
+      uuid: json['uuid'] as String,
+      content: json['content'] as String,
+      createdDate: DateTime.parse(json['createdDate'] as String),
+      updatedDate: DateTime.parse(json['updatedDate'] as String),
+      pinned: json['pinned'] as bool,
+    );
 
 Map<String, dynamic> _$NoteModelToJson(NoteModel instance) => <String, dynamic>{
-  'uuid': instance.uuid,
-  // 'title': instance.title,
-  'content': instance.content,
-  'createdDate': instance.createdDate.toIso8601String(),
-  'updatedDate': instance.updatedDate.toIso8601String(),
-};
+      'uuid': instance.uuid,
+      'content': instance.content,
+      'createdDate': instance.createdDate.toIso8601String(),
+      'updatedDate': instance.updatedDate.toIso8601String(),
+      'pinned': instance.pinned,
+    };

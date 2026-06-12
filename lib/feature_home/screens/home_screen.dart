@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:notes/common/widgets/custom_popup_menu.dart';
 import 'package:notes/common/widgets/dialogs.dart';
 import 'package:notes/common/widgets/text_widget.dart';
-import 'package:notes/constants/app_images.dart';
-import 'package:notes/constants/app_sizes.dart';
 import 'package:notes/feature_home/models/note_model.dart';
 import 'package:notes/feature_home/providers/note_provider.dart';
 import 'package:notes/feature_home/screens/note_screen.dart';
@@ -12,8 +9,10 @@ import 'package:notes/feature_home/widgets/note_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
+import '../../common/providers/platform_provider.dart';
 import '../../common/widgets/custom_app_bar.dart';
 import '../../constants/strings.dart';
+import '../widgets/no_note_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,40 +31,60 @@ class _HomeScreenState extends State<HomeScreen> {
       content: '',
       createdDate: DateTime.now(),
       updatedDate: DateTime.now(),
+      pinned: false,
     );
 
-    Navigation.navigateTo(context, NoteScreen(note: note, isNewNote: true));
+    Navigation.navigateTo(
+        context,
+        NoteScreen(
+          note: note,
+          isNewNote: true,
+        ));
   }
 
   void openNote(NoteModel note) {
-    Navigation.navigateTo(context, NoteScreen(note: note));
+    Navigation.navigateTo(
+      context,
+      NoteScreen(note: note),
+    );
   }
 
   void onLongPress(
-    LongPressStartDetails details,
-    NoteModel note,
-  ) {
+    NoteModel note, {
+    LongPressStartDetails? details,
+    TapDownDetails? tapDownDetails,
+  }) {
     CustomPopupMenu.show(
       context: context,
-      position: details.globalPosition,
+      position: isMobile == true
+          ? details!.globalPosition
+          : tapDownDetails!.globalPosition,
       items: [
         PopupMenuItemData(
           value: 1,
           icon: Icons.push_pin_rounded,
-          label: "Pin",
+          label: note.pinned ? Strings.unpin : Strings.pin,
         ),
         PopupMenuItemData(
           value: 2,
+          icon: Icons.folder_copy_rounded,
+          label: Strings.duplicate,
+        ),
+        PopupMenuItemData(
+          value: 3,
           icon: Icons.delete_rounded,
-          label: "Delete",
+          label: Strings.delete,
         ),
       ],
       onSelected: (value) {
         switch (value) {
           case 1:
-            pinNote();
+            pin(note);
             break;
           case 2:
+            duplicateNote(note);
+            break;
+          case 3:
             deleteNote(note.uuid);
             break;
         }
@@ -76,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void deleteNote(String uuid) {
     Dialogs.dialogWithOptions(
       context,
-      'Are you sure you want to delete this note.',
+      Strings.areYouSure,
       () async {
         await context.read<NoteProvider>().deleteNote(uuid);
         if (mounted) {
@@ -89,12 +108,51 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void pinNote() {}
+  void pin(NoteModel note) {
+    if (note.pinned) {
+      context.read<NoteProvider>().unpinNote(note);
+    } else {
+      context.read<NoteProvider>().pinNote(note);
+    }
+  }
+
+  void duplicateNote(NoteModel originalNote) async {
+    final duplicateUuid = Uuid().v4();
+
+    final duplicateNote = NoteModel(
+      uuid: duplicateUuid,
+      content: originalNote.content,
+      createdDate: originalNote.createdDate,
+      updatedDate: originalNote.updatedDate,
+      pinned: originalNote.pinned,
+    );
+
+    await context.read<NoteProvider>().saveNote(duplicateNote);
+  }
+
+  List<NoteItem> processNotes(List<NoteModel> notes) {
+    List<NoteItem> processedList = [];
+
+    final pinnedNotes = notes.where((note) => note.pinned).toList();
+    final unpinnedNotes = notes.where((note) => !note.pinned).toList();
+
+    if (pinnedNotes.isNotEmpty) {
+      processedList.add(NoteHeader('Pinned'));
+      processedList.addAll(pinnedNotes.map((n) => NoteListItem(n)));
+    }
+
+    if (unpinnedNotes.isNotEmpty) {
+      processedList.add(NoteHeader('All'));
+      processedList.addAll(unpinnedNotes.map((n) => NoteListItem(n)));
+    }
+    return processedList;
+  }
 
   @override
   Widget build(BuildContext context) {
     // final size = MediaQuery.sizeOf(context);
     final notes = context.watch<NoteProvider>().notes;
+    final processedList = processNotes(notes);
 
     return SafeArea(
       child: Scaffold(
@@ -104,55 +162,46 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         appBar: CustomAppBar(
           buttonType: AppBarButtonType.menuButton,
-          title: 'Notes',
+          title: Strings.notes,
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             notes.isEmpty
-                ? Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            AppImages.noNotes,
-                            width: 200,
-                            height: 200,
-                          ),
-                          gapH12,
-                          TextWidget(
-                            text: 'Add your first note',
-                            fontWeight: FontWeight.bold,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
+                ? NoNoteWidget()
                 : Expanded(
-                    child: ListView.separated(
+                    child: ListView.builder(
                       padding: EdgeInsets.all(10),
-                      itemCount: notes.length,
+                      itemCount: processedList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final note = notes[index];
+                        final note = processedList[index];
 
-                        return GestureDetector(
-                          onLongPressStart: (details) => onLongPress(
-                            details,
-                            note,
-                          ),
-                          onTap: () => openNote(note),
-                          child: NoteWidget(
-                            // onTap: () => openNote(note),
-                            note: note,
-                            // onLongPress: (details) {},
-                          ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return gapH4;
+                        if (note is NoteHeader) {
+                          return TextWidget(
+                            text: note.title,
+                            size: 20,
+                            fontWeight: FontWeight.bold,
+                          );
+                        }
+
+                        if (note is NoteListItem) {
+                          return GestureDetector(
+                            onLongPressStart: (details) => onLongPress(
+                              details: details,
+                              note.note,
+                            ),
+                            onSecondaryTapDown: (details) => onLongPress(
+                              tapDownDetails: details,
+                              note.note,
+                            ),
+                            onTap: () => openNote(note.note),
+                            child: NoteWidget(
+                              note: note.note,
+                            ),
+                          );
+                        }
+
+                        return SizedBox.shrink();
                       },
                     ),
                   ),
@@ -167,4 +216,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+abstract class NoteItem {}
+
+class NoteHeader extends NoteItem {
+  final String title;
+  NoteHeader(this.title);
+}
+
+class NoteListItem extends NoteItem {
+  final NoteModel note;
+  NoteListItem(this.note);
 }

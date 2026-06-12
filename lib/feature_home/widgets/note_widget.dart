@@ -4,15 +4,11 @@ import '../../common/widgets/text_widget.dart';
 import '../models/note_model.dart';
 
 class NoteWidget extends StatelessWidget {
-  // final VoidCallback onTap;
-  // final VoidCallback onLongPress;
   final NoteModel note;
 
   const NoteWidget({
     super.key,
-    // required this.onTap,
     required this.note,
-    // required this.onLongPress,
   });
 
   @override
@@ -22,15 +18,16 @@ class NoteWidget extends StatelessWidget {
     // final textTheme = Theme.of(context).textTheme;
 
     String formattedDate(DateTime date) {
-      return DateFormat('dd-MM-yyyy').format(date);
+      return DateFormat('yyyy-MM-dd').format(date);
     }
 
     return Hero(
       tag: 'note',
       child: Container(
+        margin: EdgeInsets.symmetric(vertical: 1),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          // borderRadius: BorderRadius.circular(20),
           color: theme.primary,
         ),
         child: Material(
@@ -43,12 +40,14 @@ class NoteWidget extends StatelessWidget {
                 child: TextWidget(
                   text: note.content,
                   fontWeight: FontWeight.bold,
-                  size: 18,
                   maxLines: 1,
                   overFlow: TextOverflow.ellipsis,
                 ),
               ),
-              TextWidget(text: formattedDate(note.createdDate)),
+              TextWidget(
+                text: formattedDate(note.createdDate),
+                size: 14,
+              ),
             ],
           ),
         ),

@@ -32,6 +32,7 @@ class _NoteScreenState extends State<NoteScreen> {
       content: _noteController.text,
       createdDate: isNew ? now : widget.note.createdDate,
       updatedDate: DateTime.now(),
+      pinned: false
     );
     await context.read<NoteProvider>().saveNote(note);
   }
