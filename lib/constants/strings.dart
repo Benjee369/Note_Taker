@@ -13,4 +13,5 @@ class Strings {
 
   //!Dialogs
   static const String areYouSure = 'Are you sure you want to delete this note';
+  static  String areYouSureMany(int count) => 'Are you sure you want to delete $count notes';
 }

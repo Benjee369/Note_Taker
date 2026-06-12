@@ -58,8 +58,22 @@ class NoteProvider with ChangeNotifier {
     getNotes();
   }
 
-  Future deleteNote(String uuid) async {
+  Future bulkDeleteNotes(Set<String> uuids) async {
+    _notes.removeWhere((note) => uuids.contains(note.uuid));
+    notifyListeners();
+
+    for (String uuid in uuids) {
+      deleteNote(uuid, shouldRefresh: false);
+    }
+  }
+
+  Future deleteNote(
+    String uuid, {
+    bool shouldRefresh = true,
+  }) async {
     await NoteDatabase().deleteNote(uuid);
-    getNotes();
+    if (shouldRefresh) {
+      getNotes();
+    }
   }
 }

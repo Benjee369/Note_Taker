@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:notes/common/widgets/custom_popup_menu.dart';
 import 'package:notes/common/widgets/dialogs.dart';
@@ -23,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final uuid = Uuid();
+  final Set<String> selectedNotes = {};
 
   void createNewNote() {
     final id = uuid.v4();
@@ -35,18 +38,23 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     Navigation.navigateTo(
-        context,
-        NoteScreen(
-          note: note,
-          isNewNote: true,
-        ));
+      context,
+      NoteScreen(
+        note: note,
+        isNewNote: true,
+      ),
+    );
   }
 
   void openNote(NoteModel note) {
-    Navigation.navigateTo(
-      context,
-      NoteScreen(note: note),
-    );
+    if (selectedNotes.isNotEmpty) {
+      selectNote(note);
+    } else {
+      Navigation.navigateTo(
+        context,
+        NoteScreen(note: note),
+      );
+    }
   }
 
   void onLongPress(
@@ -67,11 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         PopupMenuItemData(
           value: 2,
+          icon: Icons.check_box_rounded,
+          label: 'Select',
+        ),
+        PopupMenuItemData(
+          value: 3,
           icon: Icons.folder_copy_rounded,
           label: Strings.duplicate,
         ),
         PopupMenuItemData(
-          value: 3,
+          value: 4,
           icon: Icons.delete_rounded,
           label: Strings.delete,
         ),
@@ -82,9 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
             pin(note);
             break;
           case 2:
-            duplicateNote(note);
+            selectNote(note);
             break;
           case 3:
+            duplicateNote(note);
+            break;
+          case 4:
             deleteNote(note.uuid);
             break;
         }
@@ -148,6 +164,56 @@ class _HomeScreenState extends State<HomeScreen> {
     return processedList;
   }
 
+  void selectNote(NoteModel note) {
+    if (selectedNotes.contains(note.uuid)) {
+      setState(() {
+        selectedNotes.remove(note.uuid);
+      });
+      log(
+        'removed note ${note.uuid} to selected list...',
+        name: 'SelectedNotes',
+      );
+    } else {
+      setState(() {
+        selectedNotes.add(note.uuid);
+      });
+      log(
+        'added note ${note.uuid} to selected list...',
+        name: 'SelectedNotes',
+      );
+    }
+  }
+
+  void bulkDeleteNotes() async {
+    Dialogs.dialogWithOptions(
+      context,
+      Strings.areYouSureMany(selectedNotes.length),
+      () async {
+        context.read<NoteProvider>().bulkDeleteNotes(selectedNotes);
+        selectedNotes.clear();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      },
+      () => Navigator.pop(context),
+      Strings.ok,
+      Strings.cancel,
+    );
+  }
+
+  void selectAndUnselectAll() {
+    final notes = context.read<NoteProvider>().notes;
+    if (selectedNotes.length == notes.length) {
+      setState(() {
+        selectedNotes.clear();
+      });
+    } else {
+      setState(() {
+        selectedNotes.addAll(notes.map((n) => n.uuid).toSet());
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // final size = MediaQuery.sizeOf(context);
@@ -163,6 +229,18 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: CustomAppBar(
           buttonType: AppBarButtonType.menuButton,
           title: Strings.notes,
+          actions: [
+            if (selectedNotes.isNotEmpty) ...[
+              IconButton(
+                onPressed: () => selectAndUnselectAll(),
+                icon: Icon(Icons.select_all_rounded),
+              ),
+              IconButton(
+                onPressed: () => bulkDeleteNotes(),
+                icon: Icon(Icons.delete_rounded),
+              ),
+            ]
+          ],
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,6 +263,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         if (note is NoteListItem) {
+                          final selected =
+                              selectedNotes.contains(note.note.uuid);
+
                           return GestureDetector(
                             onLongPressStart: (details) => onLongPress(
                               details: details,
@@ -197,6 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: () => openNote(note.note),
                             child: NoteWidget(
                               note: note.note,
+                              isSelected: selected,
                             ),
                           );
                         }

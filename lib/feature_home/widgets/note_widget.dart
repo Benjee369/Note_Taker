@@ -1,54 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../common/widgets/text_widget.dart';
+import '../../constants/app_sizes.dart';
 import '../models/note_model.dart';
 
 class NoteWidget extends StatelessWidget {
   final NoteModel note;
+  final bool isSelected;
 
   const NoteWidget({
     super.key,
     required this.note,
+    required this.isSelected,
   });
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final theme = Theme.of(context).colorScheme;
-    // final textTheme = Theme.of(context).textTheme;
+    final textTheme = Theme.of(context).textTheme;
 
     String formattedDate(DateTime date) {
       return DateFormat('yyyy-MM-dd').format(date);
     }
 
-    return Hero(
-      tag: 'note',
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 1),
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          // borderRadius: BorderRadius.circular(20),
-          color: theme.primary,
-        ),
-        child: Material(
-          color: theme.primary,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: size.width * 0.8,
-                child: TextWidget(
-                  text: note.content,
-                  fontWeight: FontWeight.bold,
-                  maxLines: 1,
-                  overFlow: TextOverflow.ellipsis,
+    return AnimatedScale(
+      scale: isSelected ? 0.98 : 1,
+      duration: Duration(milliseconds: 200),
+      child: Hero(
+        tag: 'note',
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 1),
+          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          decoration: BoxDecoration(
+            // borderRadius: BorderRadius.circular(20),
+            color: theme.primary,
+            border: isSelected
+                ? Border.all(color: theme.secondary, width: 2)
+                : null,
+          ),
+          child: Material(
+            color: theme.primary,
+            child: Row(
+              children: [
+                if (isSelected) ...[
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 100),
+                    height: 35,
+                    width: 35,
+                    decoration: BoxDecoration(
+                        // border: Border.all(),
+                        // borderRadius: BorderRadius.circular(10),
+                        color: textTheme.bodyLarge?.color),
+                    child: Icon(
+                      Icons.check,
+                      color: theme.surface,
+                    ),
+                  ),
+                  gapW8,
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: size.width * 0.8,
+                        child: TextWidget(
+                          text: note.content,
+                          fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                          overFlow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      TextWidget(
+                        text: formattedDate(note.createdDate),
+                        size: 14,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              TextWidget(
-                text: formattedDate(note.createdDate),
-                size: 14,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
