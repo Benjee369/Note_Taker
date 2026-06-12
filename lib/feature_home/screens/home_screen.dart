@@ -37,8 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigation.navigateTo(context, NoteScreen(note: note));
   }
 
-  void onLongPress() {
-  }
+  void onLongPress() {}
 
   @override
   Widget build(BuildContext context) {
@@ -60,26 +59,26 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             notes.isEmpty
                 ? Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          AppImages.noNotes,
-                          width: 200,
-                          height: 200,
-                        ),
-                        gapH12,
-                        TextWidget(
-                          text: 'Add your first note',
-                          fontWeight: FontWeight.bold,
-                          size: 20,
-                        ),
-                      ],
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            AppImages.noNotes,
+                            width: 200,
+                            height: 200,
+                          ),
+                          gapH12,
+                          TextWidget(
+                            text: 'Add your first note',
+                            fontWeight: FontWeight.bold,
+                            size: 20,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                )
+                  )
                 : Expanded(
                     child: ListView.separated(
                       padding: EdgeInsets.all(10),
@@ -99,6 +98,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
           ],
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [ListTile()],
+          ),
         ),
       ),
     );

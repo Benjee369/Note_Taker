@@ -40,5 +40,6 @@ class NoteDatabase {
   Future deleteNote(String uuid) async {
     final box = await getBox();
     await box.delete(uuid);
+    log('deleted note $uuid...', name: 'NoteDatabase');
   }
 }
