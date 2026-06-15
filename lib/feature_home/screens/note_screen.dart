@@ -6,6 +6,7 @@ import 'package:notes/feature_home/providers/note_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/widgets/custom_app_bar.dart';
+import '../../constants/strings.dart';
 
 class NoteScreen extends StatefulWidget {
   final NoteModel note;
@@ -27,13 +28,12 @@ class _NoteScreenState extends State<NoteScreen> {
     final now = DateTime.now();
 
     final note = NoteModel(
-      uuid: isNew ? _uuid : widget.note.uuid,
-      // title: title,
-      content: _noteController.text,
-      createdDate: isNew ? now : widget.note.createdDate,
-      updatedDate: DateTime.now(),
-      pinned: false
-    );
+        uuid: isNew ? _uuid : widget.note.uuid,
+        // title: title,
+        content: _noteController.text,
+        createdDate: isNew ? now : widget.note.createdDate,
+        updatedDate: DateTime.now(),
+        pinned: false);
     await context.read<NoteProvider>().saveNote(note);
   }
 
@@ -68,22 +68,11 @@ class _NoteScreenState extends State<NoteScreen> {
 
     return SafeArea(
       child: Hero(
-        tag: 'note',
+        tag: widget.note.uuid,
         child: Scaffold(
           appBar: CustomAppBar(
-            title: 'Note',
+            title: Strings.note,
             buttonType: AppBarButtonType.backButton,
-            actions: [
-              IconButton(
-                onPressed: () async {
-                  _noteController.text.isNotEmpty ? saveNote() : null;
-                },
-                icon: Icon(
-                  Icons.check,
-                  size: 40,
-                ),
-              ),
-            ],
           ),
           body: Column(
             children: [
@@ -92,11 +81,12 @@ class _NoteScreenState extends State<NoteScreen> {
                   onChanged: (text) => onTypingChange(text),
                   controller: _noteController,
                   decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 3.0,
-                        horizontal: 10.0,
-                      ),
-                      border: InputBorder.none),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 3.0,
+                      horizontal: 10.0,
+                    ),
+                    border: InputBorder.none,
+                  ),
                   maxLines: 10,
                 ),
               ),

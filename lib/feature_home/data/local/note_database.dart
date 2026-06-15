@@ -9,8 +9,8 @@ class NoteDatabase {
 
   Future<Box> getBox() async {
     if (_noteBox != null && _noteBox!.isOpen) return _noteBox!;
-    final box = Hive.openBox('notesBox');
-    return box;
+    _noteBox = await Hive.openBox('notesBox');
+    return _noteBox!;
   }
 
   Future saveNote(NoteModel note) async {

@@ -28,15 +28,20 @@ class NoteWidget extends StatelessWidget {
       scale: isSelected ? 0.98 : 1,
       duration: Duration(milliseconds: 200),
       child: Hero(
-        tag: 'note',
+        tag: note.uuid,
         child: Container(
           margin: EdgeInsets.symmetric(vertical: 1),
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          padding: EdgeInsets.symmetric(
+            vertical: 4,
+            horizontal: 8,
+          ),
           decoration: BoxDecoration(
-            // borderRadius: BorderRadius.circular(20),
             color: theme.primary,
             border: isSelected
-                ? Border.all(color: theme.secondary, width: 2)
+                ? Border.all(
+                    color: theme.secondary,
+                    width: 2,
+                  )
                 : null,
           ),
           child: Material(
@@ -49,9 +54,8 @@ class NoteWidget extends StatelessWidget {
                     height: 35,
                     width: 35,
                     decoration: BoxDecoration(
-                        // border: Border.all(),
-                        // borderRadius: BorderRadius.circular(10),
-                        color: textTheme.bodyLarge?.color),
+                      color: textTheme.bodyLarge?.color,
+                    ),
                     child: Icon(
                       Icons.check,
                       color: theme.surface,
@@ -70,11 +74,13 @@ class NoteWidget extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           maxLines: 1,
                           overFlow: TextOverflow.ellipsis,
+                          textColor: theme.surface,
                         ),
                       ),
                       TextWidget(
                         text: formattedDate(note.createdDate),
                         size: 14,
+                        textColor: theme.surface,
                       ),
                     ],
                   ),

@@ -24,12 +24,12 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> saveNote(NoteModel note) async {
-    await NoteDatabase().saveNote(note);
+    await noteDatabase.saveNote(note);
     getNotes();
   }
 
   Future<void> getSingleNote(String uuid) async {
-    _noteModel = await NoteDatabase().getSingleNote(uuid);
+    _noteModel = await noteDatabase.getSingleNote(uuid);
     notifyListeners();
   }
 
@@ -38,7 +38,7 @@ class NoteProvider with ChangeNotifier {
     _isGettingNotes = _notes.isEmpty;
     notifyListeners();
 
-    final dbNotes = await NoteDatabase().getNotes();
+    final dbNotes = await noteDatabase.getNotes();
     _notes = dbNotes;
     notifyListeners();
 
@@ -48,13 +48,13 @@ class NoteProvider with ChangeNotifier {
 
   Future pinNote(NoteModel note) async {
     final updatedNote = note.copyWith(pinned: true);
-    await NoteDatabase().saveNote(updatedNote);
+    await noteDatabase.saveNote(updatedNote);
     getNotes();
   }
 
   Future unpinNote(NoteModel note) async {
     final updatedNote = note.copyWith(pinned: false);
-    await NoteDatabase().saveNote(updatedNote);
+    await noteDatabase.saveNote(updatedNote);
     getNotes();
   }
 
@@ -71,7 +71,7 @@ class NoteProvider with ChangeNotifier {
     String uuid, {
     bool shouldRefresh = true,
   }) async {
-    await NoteDatabase().deleteNote(uuid);
+    await noteDatabase.deleteNote(uuid);
     if (shouldRefresh) {
       getNotes();
     }

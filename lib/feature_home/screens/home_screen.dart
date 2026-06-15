@@ -1,20 +1,19 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:notes/common/widgets/custom_popup_menu.dart';
 import 'package:notes/common/widgets/dialogs.dart';
-import 'package:notes/common/widgets/text_widget.dart';
 import 'package:notes/feature_home/models/note_model.dart';
 import 'package:notes/feature_home/providers/note_provider.dart';
 import 'package:notes/feature_home/screens/note_screen.dart';
-import 'package:notes/feature_home/widgets/note_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
-import '../../common/providers/platform_provider.dart';
 import '../../common/widgets/custom_app_bar.dart';
 import '../../constants/strings.dart';
+import '../providers/view_mode_provider.dart';
+import '../widgets/home_drawer.dart';
 import '../widgets/no_note_widget.dart';
+import '../widgets/note_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final uuid = Uuid();
   final Set<String> selectedNotes = {};
+  bool gridView = true;
 
   void createNewNote() {
     final id = uuid.v4();
@@ -62,11 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
     LongPressStartDetails? details,
     TapDownDetails? tapDownDetails,
   }) {
+    final position = details?.globalPosition ?? tapDownDetails?.globalPosition;
+    if (position == null) return;
+
     CustomPopupMenu.show(
       context: context,
-      position: isMobile == true
-          ? details!.globalPosition
-          : tapDownDetails!.globalPosition,
+      position: position,
       items: [
         PopupMenuItemData(
           value: 1,
@@ -76,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
         PopupMenuItemData(
           value: 2,
           icon: Icons.check_box_rounded,
-          label: 'Select',
+          label: Strings.select,
         ),
         PopupMenuItemData(
           value: 3,
@@ -214,6 +215,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void toggleViewMode() {
+    setState(() {
+      gridView = !gridView;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // final size = MediaQuery.sizeOf(context);
@@ -247,67 +254,67 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             notes.isEmpty
                 ? NoNoteWidget()
-                : Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.all(10),
-                      itemCount: processedList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final note = processedList[index];
-
-                        if (note is NoteHeader) {
-                          return TextWidget(
-                            text: note.title,
-                            size: 20,
-                            fontWeight: FontWeight.bold,
-                          );
-                        }
-
-                        if (note is NoteListItem) {
-                          final selected =
-                              selectedNotes.contains(note.note.uuid);
-
-                          return GestureDetector(
-                            onLongPressStart: (details) => onLongPress(
-                              details: details,
-                              note.note,
-                            ),
-                            onSecondaryTapDown: (details) => onLongPress(
-                              tapDownDetails: details,
-                              note.note,
-                            ),
-                            onTap: () => openNote(note.note),
-                            child: NoteWidget(
-                              note: note.note,
-                              isSelected: selected,
-                            ),
-                          );
-                        }
-
-                        return SizedBox.shrink();
-                      },
-                    ),
-                  ),
+                : context.watch<ViewModeProvider>().viewMode
+                    ? Expanded(
+                        child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            childAspectRatio: 1,
+                          ),
+                          itemCount: processedList.length,
+                          itemBuilder: (context, index) {
+                            return NoteView(
+                              index: index,
+                              processedList: processedList,
+                              selectedNotes: selectedNotes,
+                              onTap: (note) => openNote(note),
+                              onLongPress: (details, note) => onLongPress(
+                                note,
+                                details: details,
+                              ),
+                              onSecondaryTap: (details, note) {
+                                // log(onSecondaryTap == null ? 'null' : 'not null');
+                                log('secondary from home triggered');
+                                onLongPress(
+                                  note,
+                                  tapDownDetails: details,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      )
+                    : Expanded(
+                        child: ListView.builder(
+                          padding: EdgeInsets.all(10),
+                          itemCount: processedList.length,
+                          itemBuilder: (context, index) {
+                            // final note = processedList[index];
+                            return NoteView(
+                              index: index,
+                              processedList: processedList,
+                              selectedNotes: selectedNotes,
+                              onTap: (note) => openNote(note),
+                              onLongPress: (details, note) => onLongPress(
+                                note,
+                                details: details,
+                              ),
+                              onSecondaryTap: (details, note) {
+                                log('secondary from home triggered');
+                                onLongPress(
+                                  note,
+                                  tapDownDetails: details,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
           ],
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [ListTile()],
-          ),
-        ),
+        drawer: HomeDrawer(),
       ),
     );
   }
-}
-
-abstract class NoteItem {}
-
-class NoteHeader extends NoteItem {
-  final String title;
-  NoteHeader(this.title);
-}
-
-class NoteListItem extends NoteItem {
-  final NoteModel note;
-  NoteListItem(this.note);
 }
