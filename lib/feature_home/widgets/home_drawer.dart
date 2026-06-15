@@ -19,6 +19,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   @override
   Drawer build(BuildContext context) {
     final viewProvider = context.watch<ViewModeProvider>();
+    final themeMode = context.watch<ThemeProvider>();
     // final view = viewProvider.getViewMode();
 
     return Drawer(
@@ -26,7 +27,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
         padding: EdgeInsets.all(10),
         children: [
           TextWidget(
-            text: 'Settings',
+            text: Strings.settings,
             size: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -34,15 +35,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
             contentPadding: EdgeInsets.zero,
             title: Row(
               children: [
-                Icon(Icons.mode_night_rounded),
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 50),
+                  child: Icon(
+                    themeMode.themeMode == ThemeMode.dark
+                        ? Icons.mode_night_rounded
+                        : Icons.wb_sunny_rounded,
+                  ),
+                ),
                 gapW4,
-                TextWidget(text: 'Dark mode'),
+                TextWidget(text: Strings.darkMode),
                 Spacer(),
                 Switch(
-                  value: context.watch<ThemeProvider>().themeMode ==
-                      ThemeMode.dark,
+                  value: themeMode.themeMode == ThemeMode.dark,
                   onChanged: (_) {
-                    context.read<ThemeProvider>().toggleTheme();
+                    themeMode.toggleTheme();
                   },
                 ),
               ],
@@ -61,7 +68,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 ),
                 gapW4,
                 TextWidget(
-                  text: !viewProvider.viewMode ? 'Grid view' : 'List view',
+                  text: !viewProvider.viewMode
+                      ? Strings.gridView
+                      : Strings.listView,
                 ),
               ],
             ),

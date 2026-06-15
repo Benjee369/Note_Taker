@@ -17,5 +17,13 @@ class Strings {
 
   //!Dialogs
   static const String areYouSure = 'Are you sure you want to delete this note';
-  static  String areYouSureMany(int count) => 'Are you sure you want to delete $count notes';
+  static String areYouSureMany(int count) =>
+      'Are you sure you want to delete $count notes';
+
+  //!Drawer
+  static const String settings = "Settings";
+  static const String darkMode = "Dark mode";
+  static const String gridView = "Grid view";
+  static const String listView = "List view";
+
 }

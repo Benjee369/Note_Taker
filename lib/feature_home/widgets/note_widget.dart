@@ -47,6 +47,7 @@ class NoteWidget extends StatelessWidget {
           child: Material(
             color: theme.primary,
             child: Row(
+              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (isSelected) ...[
                   AnimatedContainer(
@@ -85,6 +86,15 @@ class NoteWidget extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (note.pinned)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Icon(
+                      Icons.push_pin_rounded,
+                      color: theme.surface,
+                      size: 14,
+                    ),
+                  ),
               ],
             ),
           ),

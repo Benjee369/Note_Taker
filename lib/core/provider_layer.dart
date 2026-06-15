@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes/common/databases/theme_database.dart';
 import 'package:notes/core/app.dart';
 import 'package:notes/feature_home/data/local/note_database.dart';
+import 'package:notes/feature_home/data/local/open_note_database.dart';
 import 'package:notes/feature_home/data/local/view_mode_database.dart';
 import 'package:notes/feature_home/providers/note_provider.dart';
 import 'package:notes/feature_home/providers/view_mode_provider.dart';
@@ -18,9 +19,11 @@ class ProviderLayer extends StatelessWidget {
         Provider(create: (_) => NoteDatabase()),
         Provider(create: (_) => ViewModeDatabase()),
         Provider(create: (_) => ThemeDatabase()),
+        Provider(create: (_) => OpenNoteDatabase()),
         ChangeNotifierProvider(
           create: (context) => NoteProvider(
             context.read<NoteDatabase>(),
+            context.read<OpenNoteDatabase>(),
           ),
         ),
         ChangeNotifierProvider(
@@ -34,7 +37,7 @@ class ProviderLayer extends StatelessWidget {
           ),
         ),
       ],
-      child:App(),
+      child: App(),
     );
   }
 }

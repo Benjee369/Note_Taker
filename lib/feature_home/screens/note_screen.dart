@@ -28,12 +28,12 @@ class _NoteScreenState extends State<NoteScreen> {
     final now = DateTime.now();
 
     final note = NoteModel(
-        uuid: isNew ? _uuid : widget.note.uuid,
-        // title: title,
-        content: _noteController.text,
-        createdDate: isNew ? now : widget.note.createdDate,
-        updatedDate: DateTime.now(),
-        pinned: false);
+      uuid: isNew ? _uuid : widget.note.uuid,
+      content: _noteController.text,
+      createdDate: isNew ? now : widget.note.createdDate,
+      updatedDate: DateTime.now(),
+      pinned: false,
+    );
     await context.read<NoteProvider>().saveNote(note);
   }
 
@@ -42,6 +42,12 @@ class _NoteScreenState extends State<NoteScreen> {
     _debouncer = Timer(const Duration(milliseconds: 1000), () {
       saveNote();
     });
+  }
+
+  void closeNote() async {
+    await context.read<NoteProvider>().clearOpenNote();
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 
   @override
@@ -64,8 +70,6 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context).colorScheme;
-
     return SafeArea(
       child: Hero(
         tag: widget.note.uuid,
@@ -73,6 +77,7 @@ class _NoteScreenState extends State<NoteScreen> {
           appBar: CustomAppBar(
             title: Strings.note,
             buttonType: AppBarButtonType.backButton,
+            onBackPress: () => closeNote(),
           ),
           body: Column(
             children: [

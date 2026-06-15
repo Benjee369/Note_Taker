@@ -46,14 +46,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void openNote(NoteModel note) {
+  void openNote(NoteModel note) async {
     if (selectedNotes.isNotEmpty) {
       selectNote(note);
     } else {
+      await context.read<NoteProvider>().setOpenNote(note.uuid);
+      if (!mounted) return;
       Navigation.navigateTo(
         context,
         NoteScreen(note: note),
       );
+    }
+  }
+
+  void checkOpenNote() async {
+    final noteProvider = context.read<NoteProvider>();
+    final isOpen = await noteProvider.checkOpenNote();
+    if (isOpen) {
+      openNote(noteProvider.noteModel!);
     }
   }
 
@@ -222,6 +232,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkOpenNote();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // final size = MediaQuery.sizeOf(context);
     final notes = context.watch<NoteProvider>().notes;
@@ -274,8 +291,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 details: details,
                               ),
                               onSecondaryTap: (details, note) {
-                                // log(onSecondaryTap == null ? 'null' : 'not null');
-                                log('secondary from home triggered');
                                 onLongPress(
                                   note,
                                   tapDownDetails: details,
@@ -290,7 +305,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: EdgeInsets.all(10),
                           itemCount: processedList.length,
                           itemBuilder: (context, index) {
-                            // final note = processedList[index];
                             return NoteView(
                               index: index,
                               processedList: processedList,
@@ -301,7 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 details: details,
                               ),
                               onSecondaryTap: (details, note) {
-                                log('secondary from home triggered');
                                 onLongPress(
                                   note,
                                   tapDownDetails: details,

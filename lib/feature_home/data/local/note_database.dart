@@ -34,7 +34,7 @@ class NoteDatabase {
     final box = await getBox();
     final note = await box.get(uuid);
     if (note == null) return null;
-    return NoteModel.fromJson(note);
+    return NoteModel.fromJson(Map<String, dynamic>.from(note));
   }
 
   Future deleteNote(String uuid) async {
