@@ -12,7 +12,7 @@ class ThemeProvider with ChangeNotifier {
   void toggleTheme() async {
     themeMode = themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     log('toggled theme to $themeMode');
-    await themeDatabase.setTheme(themeMode != ThemeMode.dark);
+    await themeDatabase.setTheme(themeMode == ThemeMode.dark);
     notifyListeners();
   }
 

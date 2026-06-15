@@ -1,23 +1,36 @@
 import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'customer_page_route.dart';
 
 class Navigation {
   static Future<dynamic> navigateTo(BuildContext context, Widget child) {
     return Navigator.push(
-        context,
-        Platform.isAndroid
-            ? CustomPageRoute(child: child)
-            : CupertinoPageRoute(builder: (context) => child));
+      context,
+      _getRoute(child),
+    );
   }
 
-  static Future<dynamic> navigateAndReplace(
-      BuildContext context, Widget child) {
+  static Future<dynamic> navigateAndReplace(BuildContext context, Widget child) {
     return Navigator.pushAndRemoveUntil(
-        context,
-        Platform.isAndroid
-            ? CustomPageRoute(child: child)
-            : CupertinoPageRoute(builder: (context) => child),
-            (Route<dynamic> route) => false);
+      context,
+      _getRoute(child),
+          (route) => false,
+    );
+  }
+
+  static PageRoute _getRoute(Widget child) {
+    if (kIsWeb) {
+      return MaterialPageRoute(builder: (_) => child);
+    }
+
+    // iOS style
+    if (Platform.isIOS) {
+      return CupertinoPageRoute(builder: (_) => child);
+    }
+
+    // Android + Windows + Linux + macOS
+    return MaterialPageRoute(builder: (_) => child);
   }
 }

@@ -6,6 +6,7 @@ import 'package:notes/feature_home/screens/home_screen.dart';
 import 'package:notes/feature_home/providers/note_provider.dart';
 import 'package:provider/provider.dart';
 import '../common/navigation/navigation.dart';
+import '../common/providers/theme_provider.dart';
 import '../constants/app_images.dart';
 import '../constants/app_sizes.dart';
 import '../feature_home/providers/view_mode_provider.dart';
@@ -21,6 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    // context.read<ThemeProvider>().getViewMode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getNotes();
     });
