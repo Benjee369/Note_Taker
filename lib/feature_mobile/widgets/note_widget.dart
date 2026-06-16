@@ -26,7 +26,7 @@ class NoteWidget extends StatelessWidget {
     }
 
     return AnimatedScale(
-      scale: isSelected ? 0.98 : 1,
+      scale: isSelected ? 0.99 : 1,
       duration: Duration(milliseconds: 200),
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 1),
@@ -38,27 +38,27 @@ class NoteWidget extends StatelessWidget {
           color: theme.primary,
           border: isSelected
               ? Border.all(
-                  color: theme.secondary,
-                  width: 2,
+                  color: textTheme.bodyLarge!.color!,
+                  width: 1,
                 )
               : null,
         ),
         child: Material(
           color: theme.primary,
           child: Row(
-            // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (isSelected) ...[
                 AnimatedContainer(
                   duration: Duration(milliseconds: 100),
-                  height: 35,
-                  width: 35,
+                  height: isMobile ? 35 : 20,
+                  width: isMobile ? 35 : 20,
                   decoration: BoxDecoration(
                     color: textTheme.bodyLarge?.color,
                   ),
                   child: Icon(
                     Icons.check,
                     color: theme.surface,
+                    size: isMobile ? null : 20,
                   ),
                 ),
                 gapW8,

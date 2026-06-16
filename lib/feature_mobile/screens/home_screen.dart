@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:notes/common/providers/platform_provider.dart';
 import 'package:notes/common/widgets/custom_popup_menu.dart';
 import 'package:notes/common/widgets/dialogs.dart';
-import 'package:notes/feature_computer/screens/home_screen.dart';
+import 'package:notes/feature_computer/screens/computer_home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
@@ -52,10 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       await context.read<NoteProvider>().setOpenNote(note.uuid);
       if (!mounted) return;
-      Navigation.navigateTo(
-        context,
-        NoteScreen(),
-      );
+      isMobile
+          ? Navigation.navigateTo(
+              context,
+              NoteScreen(),
+            )
+          : null;
     }
   }
 
@@ -233,7 +235,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     checkOpenNote();
   }

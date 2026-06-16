@@ -11,12 +11,10 @@ import '../../common/models/note_model.dart';
 import '../providers/note_provider.dart';
 
 class NoteScreen extends StatefulWidget {
-  // final NoteModel note;
   final bool? isNewNote;
 
   const NoteScreen({
     super.key,
-    // required this.note,
     this.isNewNote = false,
   });
 
