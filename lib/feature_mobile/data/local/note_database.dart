@@ -1,7 +1,7 @@
 import 'dart:developer';
-
 import 'package:hive/hive.dart';
-import 'package:notes/feature_home/models/note_model.dart';
+
+import '../../../common/models/note_model.dart';
 
 class NoteDatabase {
   static Box? _noteBox;
@@ -16,18 +16,32 @@ class NoteDatabase {
   Future saveNote(NoteModel note) async {
     final box = await getBox();
     await box.put(note.uuid, note.toJson());
-    log('saved noted with id ${note.uuid}...', name: 'NoteDatabase');
+    log(
+      'saved noted with id ${note.uuid}...',
+      name: 'NoteDatabase',
+    );
   }
 
   Future<List<NoteModel>> getNotes() async {
     log('getting notes...', name: 'NoteDatabase');
     final box = await getBox();
 
-    final notes = box.values
-        .map((note) => NoteModel.fromJson(Map<String, dynamic>.from(note)))
-        .toList();
-    log('got (${notes.length})list of notes $notes...');
-    return notes;
+    final values = box.values;
+    if (values.isNotEmpty) {
+      final notes = values
+          .map((note) => NoteModel.fromJson(Map<String, dynamic>.from(note)))
+          .toList();
+      log(
+        'got (${notes.length})list of notes $notes...',
+        name: 'NoteDatabase',
+      );
+      return notes;
+    }
+    log(
+      'no notes found..',
+      name: 'NoteDatabase',
+    );
+    return [];
   }
 
   Future<NoteModel?> getSingleNote(String uuid) async {
@@ -40,6 +54,9 @@ class NoteDatabase {
   Future deleteNote(String uuid) async {
     final box = await getBox();
     await box.delete(uuid);
-    log('deleted note $uuid...', name: 'NoteDatabase');
+    log(
+      'deleted note $uuid...',
+      name: 'NoteDatabase',
+    );
   }
 }

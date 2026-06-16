@@ -1,10 +1,8 @@
 import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
-import 'package:notes/feature_home/data/local/note_database.dart';
-
+import '../data/local/note_database.dart';
 import '../data/local/open_note_database.dart';
-import '../models/note_model.dart';
+import '../../common/models/note_model.dart';
 
 class NoteProvider with ChangeNotifier {
   final NoteDatabase noteDatabase;
@@ -29,6 +27,7 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> setOpenNote(String uuid) async {
+    await getSingleNote(uuid);
     await openNoteDatabase.setOpenNote(uuid);
   }
 
@@ -54,7 +53,12 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> getSingleNote(String uuid) async {
-    _noteModel = await noteDatabase.getSingleNote(uuid);
+    final note = await noteDatabase.getSingleNote(uuid);
+    _noteModel = note;
+    log(
+      'got single note ${note?.toJson()}...',
+      name: 'NoteProvider',
+    );
     notifyListeners();
   }
 
@@ -88,7 +92,10 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
 
     for (String uuid in uuids) {
-      deleteNote(uuid, shouldRefresh: false);
+      deleteNote(
+        uuid,
+        shouldRefresh: false,
+      );
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:notes/feature_home/data/local/note_database.dart';
-import 'package:notes/feature_home/data/local/open_note_database.dart';
+
+import '../data/local/note_database.dart';
+import '../data/local/open_note_database.dart';
 
 class OpenNoteProvider with ChangeNotifier {
   final NoteDatabase noteDatabase;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:notes/feature_home/data/local/view_mode_database.dart';
+
+import '../data/local/view_mode_database.dart';
 
 class ViewModeProvider with ChangeNotifier {
   final ViewModeDatabase viewModeDatabase;

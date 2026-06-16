@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:notes/feature_home/providers/view_mode_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-
 import '../../common/providers/theme_provider.dart';
 import '../../common/widgets/text_widget.dart';
 import '../../constants/app_sizes.dart';
 import '../../constants/strings.dart';
+import '../providers/view_mode_provider.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({super.key});

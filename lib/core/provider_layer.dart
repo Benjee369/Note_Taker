@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:notes/common/databases/theme_database.dart';
 import 'package:notes/core/app.dart';
-import 'package:notes/feature_home/data/local/note_database.dart';
-import 'package:notes/feature_home/data/local/open_note_database.dart';
-import 'package:notes/feature_home/data/local/view_mode_database.dart';
-import 'package:notes/feature_home/providers/note_provider.dart';
-import 'package:notes/feature_home/providers/view_mode_provider.dart';
 import 'package:provider/provider.dart';
 import '../common/providers/theme_provider.dart';
+import '../feature_mobile/data/local/note_database.dart';
+import '../feature_mobile/data/local/open_note_database.dart';
+import '../feature_mobile/data/local/view_mode_database.dart';
+import '../feature_mobile/providers/note_provider.dart';
+import '../feature_mobile/providers/view_mode_provider.dart';
 
 class ProviderLayer extends StatelessWidget {
   const ProviderLayer({super.key});
