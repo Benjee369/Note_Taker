@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes/common/providers/platform_provider.dart';
+import 'package:provider/provider.dart';
 import '../../common/widgets/text_widget.dart';
 import '../../constants/app_sizes.dart';
 import '../../common/models/note_model.dart';
+import '../providers/note_provider.dart';
 
 class NoteWidget extends StatelessWidget {
   final NoteModel note;
@@ -20,7 +22,12 @@ class NoteWidget extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     final theme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final noteProvider = context.read<NoteProvider>().noteModel;
 
+    bool isOpen = false;
+    if (noteProvider?.uuid != null) {
+      isOpen = !isMobile && noteProvider!.uuid == note.uuid;
+    }
     String formattedDate(DateTime date) {
       return DateFormat('yyyy-MM-dd').format(date);
     }
@@ -29,13 +36,13 @@ class NoteWidget extends StatelessWidget {
       scale: isSelected ? 0.99 : 1,
       duration: Duration(milliseconds: 200),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 1),
+        margin: EdgeInsets.fromLTRB(10, 1, isOpen ? 0 : 10, 1),
         padding: EdgeInsets.symmetric(
           vertical: 4,
           horizontal: 8,
         ),
         decoration: BoxDecoration(
-          color: theme.primary,
+          color: isOpen ? theme.secondary : theme.primary,
           border: isSelected
               ? Border.all(
                   color: textTheme.bodyLarge!.color!,
@@ -44,7 +51,7 @@ class NoteWidget extends StatelessWidget {
               : null,
         ),
         child: Material(
-          color: theme.primary,
+          color: isOpen ? theme.secondary : theme.primary,
           child: Row(
             children: [
               if (isSelected) ...[

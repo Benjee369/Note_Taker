@@ -37,10 +37,12 @@ class _NoteScreenState extends State<NoteScreen> {
       content: _noteController.text,
       createdDate: isNew ? now : noteProvider!.createdDate,
       updatedDate: DateTime.now(),
-      isPinned: false,
+      isPinned: noteProvider!.isPinned,
     );
     await context.read<NoteProvider>().saveNote(note);
   }
+
+  //basically, if I select a note and then I delete it, the selected note list is not cleared
 
   void onTypingChange(String text) {
     if (_debouncer?.isActive ?? false) _debouncer?.cancel();

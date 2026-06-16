@@ -26,10 +26,13 @@ class NoteView extends StatelessWidget {
     final note = processedList[index];
 
     if (note is NoteHeader) {
-      return TextWidget(
-        text: note.title,
-        size: 20,
-        fontWeight: FontWeight.bold,
+      return Padding(
+        padding: const EdgeInsets.only(left: 10),
+        child: TextWidget(
+          text: note.title,
+          size: 20,
+          fontWeight: FontWeight.bold,
+        ),
       );
     }
 

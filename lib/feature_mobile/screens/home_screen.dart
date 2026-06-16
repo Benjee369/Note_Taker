@@ -127,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Strings.areYouSure,
       () async {
         await context.read<NoteProvider>().deleteNote(uuid);
+        selectedNotes.clear();
         if (mounted) {
           Navigator.pop(context);
         }
@@ -332,7 +333,6 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : ComputerHomeScreen(
               noteView: ListView.builder(
-                padding: EdgeInsets.all(10),
                 itemCount: processedList.length,
                 itemBuilder: (context, index) {
                   return NoteView(
