@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import '../../common/providers/theme_provider.dart';
+import '../../common/providers/system_settings_provider.dart';
 import '../../common/widgets/text_widget.dart';
 import '../../constants/app_sizes.dart';
 import '../../constants/strings.dart';
-import '../providers/view_mode_provider.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({super.key});
@@ -17,9 +16,7 @@ class HomeDrawer extends StatefulWidget {
 class _HomeDrawerState extends State<HomeDrawer> {
   @override
   Drawer build(BuildContext context) {
-    final viewProvider = context.watch<ViewModeProvider>();
-    final themeMode = context.watch<ThemeProvider>();
-    // final view = viewProvider.getViewMode();
+    final systemSettings = context.watch<SystemSettingsProvider>();
 
     return Drawer(
       child: ListView(
@@ -37,18 +34,18 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 AnimatedSwitcher(
                   duration: Duration(milliseconds: 50),
                   child: Icon(
-                    themeMode.themeMode == ThemeMode.dark
-                        ? Icons.mode_night_rounded
-                        : Icons.wb_sunny_rounded,
+                    systemSettings.systemSettingsModel.theme
+                        ? Icons.wb_sunny_rounded
+                        : Icons.mode_night_rounded,
                   ),
                 ),
                 gapW4,
                 TextWidget(text: Strings.darkMode),
                 Spacer(),
                 Switch(
-                  value: themeMode.themeMode == ThemeMode.dark,
+                  value: !systemSettings.systemSettingsModel.theme,
                   onChanged: (_) {
-                    themeMode.toggleTheme();
+                    systemSettings.toggleTheme();
                   },
                 ),
               ],
@@ -56,18 +53,18 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Divider(),
           ListTile(
-            onTap: () => viewProvider.toggleViewMode(),
+            onTap: () => systemSettings.toggleViewMode(),
             contentPadding: EdgeInsets.zero,
             title: Row(
               children: [
                 Icon(
-                  !viewProvider.viewMode
+                  !systemSettings.systemSettingsModel.viewMode
                       ? Icons.grid_view_rounded
                       : Icons.format_list_bulleted_rounded,
                 ),
                 gapW4,
                 TextWidget(
-                  text: !viewProvider.viewMode
+                  text: !systemSettings.systemSettingsModel.viewMode
                       ? Strings.gridView
                       : Strings.listView,
                 ),

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:notes/common/databases/theme_database.dart';
+import 'package:notes/common/database/system_settings_database.dart';
+import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/core/app.dart';
 import 'package:provider/provider.dart';
-import '../common/providers/theme_provider.dart';
-import '../feature_mobile/data/local/note_database.dart';
-import '../feature_mobile/data/local/open_note_database.dart';
-import '../feature_mobile/data/local/view_mode_database.dart';
-import '../feature_mobile/providers/note_provider.dart';
-import '../feature_mobile/providers/view_mode_provider.dart';
+import '../common/database/note_database.dart';
+import '../common/database/open_note_database.dart';
+import '../common/providers/note_provider.dart';
 
 class ProviderLayer extends StatelessWidget {
   const ProviderLayer({super.key});
@@ -17,23 +15,17 @@ class ProviderLayer extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (_) => NoteDatabase()),
-        Provider(create: (_) => ViewModeDatabase()),
-        Provider(create: (_) => ThemeDatabase()),
         Provider(create: (_) => OpenNoteDatabase()),
+        Provider(create: (_) => SystemSettingsDatabase()),
+        ChangeNotifierProvider(
+          create: (context) => SystemSettingsProvider(
+            context.read<SystemSettingsDatabase>(),
+          ),
+        ),
         ChangeNotifierProvider(
           create: (context) => NoteProvider(
             context.read<NoteDatabase>(),
             context.read<OpenNoteDatabase>(),
-          ),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => ThemeProvider(
-            context.read<ThemeDatabase>(),
-          ),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => ViewModeProvider(
-            context.read<ViewModeDatabase>(),
           ),
         ),
       ],

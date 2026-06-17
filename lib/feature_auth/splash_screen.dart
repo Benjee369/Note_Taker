@@ -7,9 +7,8 @@ import 'package:provider/provider.dart';
 import '../common/navigation/navigation.dart';
 import '../constants/app_images.dart';
 import '../constants/app_sizes.dart';
-import '../feature_mobile/providers/note_provider.dart';
-import '../feature_mobile/providers/view_mode_provider.dart';
-import '../feature_mobile/screens/home_screen.dart' as mobile;
+import '../common/providers/note_provider.dart';
+import '../feature_mobile/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,12 +30,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Hive.deleteFromDisk();
     await context.read<NoteProvider>().getNotes();
     if (mounted) {
-      await context.read<ViewModeProvider>().getViewMode();
-    }
-    if (mounted) {
       Navigation.navigateAndReplace(
         context,
-        mobile.HomeScreen(),
+       HomeScreen(),
       );
     }
   }

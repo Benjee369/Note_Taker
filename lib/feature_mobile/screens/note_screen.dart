@@ -8,7 +8,7 @@ import '../../common/providers/platform_provider.dart';
 import '../../common/widgets/custom_app_bar.dart';
 import '../../constants/strings.dart';
 import '../../common/models/note_model.dart';
-import '../providers/note_provider.dart';
+import '../../common/providers/note_provider.dart';
 
 class NoteScreen extends StatefulWidget {
   final bool? isNewNote;

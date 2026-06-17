@@ -5,6 +5,7 @@ enum AppBarButtonType {
   backButton,
   closeButton,
   menuButton,
+  custom,
   none,
 }
 
@@ -14,6 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBackPress;
   final List<Widget>? actions;
   final bool? isCenter;
+  final IconData? customIcon;
 
   const CustomAppBar({
     super.key,
@@ -22,6 +24,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.isCenter = false,
     required this.buttonType,
+    this.customIcon,
   });
 
   @override
@@ -73,7 +76,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               width: 40,
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                // color: AppColors.lightestGrey,
                 borderRadius: BorderRadius.circular(200),
               ),
               child: Icon(
@@ -87,6 +89,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         return IconButton(
           onPressed: () => Scaffold.of(context).openDrawer(),
           icon: Icon(Icons.menu),
+        );
+      case AppBarButtonType.custom:
+        return IconButton(
+          onPressed: () {
+            onBackPress?.call();
+          },
+          icon: Icon(
+            customIcon,
+          ),
         );
       case AppBarButtonType.none:
         return const SizedBox.shrink();

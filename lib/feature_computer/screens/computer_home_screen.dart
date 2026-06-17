@@ -2,13 +2,14 @@
 // the ui is all me, thought id point that out
 
 import 'package:flutter/material.dart';
+import 'package:notes/common/widgets/custom_app_bar.dart';
+import 'package:notes/constants/strings.dart';
 import 'package:notes/feature_mobile/screens/note_screen.dart';
 import 'package:notes/feature_mobile/widgets/no_note_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/models/note_model.dart';
-import '../../common/widgets/text_widget.dart';
-import '../../feature_mobile/providers/note_provider.dart';
+import '../../common/providers/note_provider.dart';
 
 class ComputerHomeScreen extends StatefulWidget {
   final Widget noteView;
@@ -107,22 +108,14 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
                           child: const Icon(Icons.add),
                         )
                       : null,
-                  body: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: TextWidget(
-                          text: 'Menu',
-                          size: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      noteProvider.notes.isEmpty
-                          ? const Expanded(child: NoNoteWidget())
-                          : Expanded(child: widget.noteView),
-                    ],
+                  appBar: CustomAppBar(
+                    buttonType: AppBarButtonType.custom,
+                    customIcon: Icons.settings,
+                    title: 'Menu',
                   ),
+                  body: noteProvider.notes.isEmpty
+                      ? NoNoteWidget()
+                      : widget.noteView,
                 ),
               ),
               Positioned(
@@ -131,14 +124,12 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
                 top: 0,
                 bottom: 0,
                 child: Scaffold(
-                  appBar: AppBar(
-                    title: const TextWidget(text: 'Note'),
-                    leading: IconButton(
-                      icon: Icon(
-                        _isDrawerOpen ? Icons.arrow_back : Icons.menu,
-                      ),
-                      onPressed: toggleDrawer,
-                    ),
+                  appBar: CustomAppBar(
+                    buttonType: AppBarButtonType.custom,
+                    title: Strings.note,
+                    customIcon:
+                        _isDrawerOpen ? Icons.chevron_left_rounded : Icons.menu,
+                    onBackPress: toggleDrawer,
                   ),
                   body: noteProvider.noteModel != null
                       ? Consumer<NoteProvider>(

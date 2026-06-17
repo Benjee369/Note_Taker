@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:hive/hive.dart';
 
-import '../../../common/models/note_model.dart';
+import '../models/note_model.dart';
 
 class NoteDatabase {
   static Box? _noteBox;

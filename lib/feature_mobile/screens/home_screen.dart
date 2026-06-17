@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:notes/common/providers/platform_provider.dart';
+import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/common/widgets/custom_popup_menu.dart';
 import 'package:notes/common/widgets/dialogs.dart';
 import 'package:notes/feature_computer/screens/computer_home_screen.dart';
@@ -10,8 +11,7 @@ import '../../common/navigation/navigation.dart';
 import '../../common/widgets/custom_app_bar.dart';
 import '../../constants/strings.dart';
 import '../../common/models/note_model.dart';
-import '../providers/note_provider.dart';
-import '../providers/view_mode_provider.dart';
+import '../../common/providers/note_provider.dart';
 import '../widgets/home_drawer.dart';
 import '../widgets/no_note_widget.dart';
 import '../widgets/note_view.dart';
@@ -274,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   notes.isEmpty
                       ? NoNoteWidget()
-                      : context.watch<ViewModeProvider>().viewMode
+                      : context.watch<SystemSettingsProvider>().systemSettingsModel.viewMode
                           ? Expanded(
                               child: GridView.builder(
                                 gridDelegate:

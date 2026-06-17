@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../common/widgets/text_widget.dart';
 import '../../constants/app_sizes.dart';
 import '../../common/models/note_model.dart';
-import '../providers/note_provider.dart';
+import '../../common/providers/note_provider.dart';
 
 class NoteWidget extends StatelessWidget {
   final NoteModel note;

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:notes/common/database/system_settings_database.dart';
+import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/feature_auth/splash_screen.dart';
 import 'package:provider/provider.dart';
-import '../common/providers/theme_provider.dart';
 import '../constants/app_colors.dart';
 
 class App extends StatefulWidget {
@@ -15,14 +16,13 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    context.read<ThemeProvider>().getViewMode();
+    context.read<SystemSettingsDatabase>().getSystemSettings();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+    return Consumer<SystemSettingsProvider>(
+      builder: (context, systemSettings, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
@@ -53,7 +53,9 @@ class _AppState extends State<App> {
               titleLarge: TextStyle(color: AppColors.white),
             ),
           ),
-          themeMode: themeProvider.themeMode,
+          themeMode: systemSettings.systemSettingsModel.theme
+              ? ThemeMode.light
+              : ThemeMode.dark,
           home: SplashScreen(),
         );
       },
