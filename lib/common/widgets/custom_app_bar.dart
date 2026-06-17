@@ -29,8 +29,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final isIOS = Platform.isIOS;
-
     return AppBar(
       title: TextWidget(
         text: title != null ? title! : '',
@@ -38,9 +36,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         size: 20,
       ),
       centerTitle: isCenter ?? true,
-      // backgroundColor: Colors.transparent,
-      // surfaceTintColor: Colors.transparent,
-      // foregroundColor: Colors.transparent,
       leading: _leadingButton(context),
       actions: actions,
     );
@@ -53,7 +48,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: Container(
             padding: const EdgeInsets.all(1),
             decoration: BoxDecoration(
-              // color: AppColors.lightestGrey,
               borderRadius: BorderRadius.circular(200),
             ),
             child: Icon(

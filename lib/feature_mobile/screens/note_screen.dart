@@ -70,14 +70,21 @@ class _NoteScreenState extends State<NoteScreen> {
     });
 
     noteProvider.addListener(() {
-      _noteController.text = noteProvider.noteModel!.content;
+      _onNoteChanged();
     });
+  }
+
+  void _onNoteChanged() {
+    final noteProvider = context.read<NoteProvider>();
+    _noteController.text = noteProvider.noteModel?.content ?? '';
   }
 
   @override
   void dispose() {
     super.dispose();
     _noteController.dispose();
+    context.read<NoteProvider>().removeListener(_onNoteChanged);
+
     _debouncer?.cancel();
   }
 
@@ -109,7 +116,7 @@ class _NoteScreenState extends State<NoteScreen> {
                       ),
                       border: InputBorder.none,
                     ),
-                    maxLines: 10,
+                    maxLines: 1000,
                   ),
                 ),
               ],

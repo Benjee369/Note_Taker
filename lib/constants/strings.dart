@@ -16,7 +16,7 @@ class Strings {
   static const String select = 'Select';
 
   //!Dialogs
-  static const String areYouSure = 'Are you sure you want to delete this note';
+  static const String areYouSure = 'Are you sure you want to delete this note?';
   static String areYouSureMany(int count) =>
       'Are you sure you want to delete $count notes';
 

@@ -26,15 +26,15 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setOpenNote(String uuid) async {
-    await getSingleNote(uuid);
-    await openNoteDatabase.setOpenNote(uuid);
+  void setOpenNote(String uuid) {
+    getSingleNote(uuid);
+    openNoteDatabase.setOpenNote(uuid);
   }
 
   Future<bool> checkOpenNote() async {
     final noteUuid = await openNoteDatabase.getOpenNote();
     if (noteUuid != null) {
-      await getSingleNote(noteUuid);
+      getSingleNote(noteUuid);
       return true;
     } else {
       return false;
@@ -47,18 +47,17 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> saveNote(NoteModel note) async {
-    await noteDatabase.saveNote(note);
-    await setOpenNote(note.uuid);
+    _notes.add(note);
+    notifyListeners();
+
+    noteDatabase.saveNote(note);
+    setOpenNote(note.uuid);
     getNotes();
   }
 
-  Future<void> getSingleNote(String uuid) async {
-    final note = await noteDatabase.getSingleNote(uuid);
+  void getSingleNote(String uuid) {
+    final note = _notes.firstWhere((n) => n.uuid == uuid);
     _noteModel = note;
-    log(
-      'got single note ${note?.toJson()}...',
-      name: 'NoteProvider',
-    );
     notifyListeners();
   }
 
@@ -75,15 +74,31 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future pinNote(NoteModel note) async {
+  void pinNote(NoteModel note) {
     final updatedNote = note.copyWith(isPinned: true);
-    await noteDatabase.saveNote(updatedNote);
+
+    final index = _notes.indexWhere(
+      (n) => n.uuid == updatedNote.uuid,
+    );
+    if (index != -1) {
+      _notes[index] = updatedNote;
+    }
+    notifyListeners();
+    noteDatabase.saveNote(updatedNote);
     getNotes();
   }
 
-  Future unpinNote(NoteModel note) async {
+  void unpinNote(NoteModel note) {
     final updatedNote = note.copyWith(isPinned: false);
-    await noteDatabase.saveNote(updatedNote);
+
+    final index = _notes.indexWhere(
+      (n) => n.uuid == updatedNote.uuid,
+    );
+    if (index != -1) {
+      _notes[index] = updatedNote;
+    }
+    notifyListeners();
+    noteDatabase.saveNote(updatedNote);
     getNotes();
   }
 
@@ -103,8 +118,10 @@ class NoteProvider with ChangeNotifier {
     String uuid, {
     bool shouldRefresh = true,
   }) async {
-    await noteDatabase.deleteNote(uuid);
-    await clearOpenNote();
+    _notes.removeWhere((n) => n.uuid == uuid);
+    notifyListeners();
+    noteDatabase.deleteNote(uuid);
+    clearOpenNote();
     if (shouldRefresh) {
       getNotes();
     }

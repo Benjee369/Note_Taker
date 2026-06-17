@@ -2,17 +2,18 @@
 // the ui is all me, thought id point that out
 
 import 'dart:async';
-
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/common/widgets/custom_app_bar.dart';
 import 'package:notes/constants/strings.dart';
+import 'package:notes/feature_computer/widgets/computer_note_drawer.dart';
 import 'package:notes/feature_mobile/screens/note_screen.dart';
-import 'package:notes/feature_mobile/widgets/no_note_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/models/note_model.dart';
 import '../../common/providers/note_provider.dart';
+import '../../common/widgets/no_note_widget.dart';
 import 'computer_settings_screen.dart';
 
 class ComputerHomeScreen extends StatefulWidget {
@@ -164,7 +165,21 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
                     customIcon:
                         _isDrawerOpen ? Icons.chevron_left_rounded : Icons.menu,
                     onBackPress: toggleDrawer,
+                    actions: [
+                      Builder(
+                        builder: (context) {
+                          return IconButton(
+                            onPressed: () {
+                              log('end drawer button clicked');
+                              Scaffold.of(context).openEndDrawer();
+                            },
+                            icon: Icon(Icons.info),
+                          );
+                        }
+                      ),
+                    ],
                   ),
+                  endDrawer: ComputerNoteDrawer(),
                   body: noteProvider.noteModel != null
                       ? Consumer<NoteProvider>(
                           builder: (context, noteProvider, child) {
@@ -195,11 +210,6 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
                           behavior: HitTestBehavior.translucent,
                           onHorizontalDragUpdate: (details) {
                             onSideBarWidthChange(details);
-                            // setState(() {
-                            //   _targetDrawerWidth += details.delta.dx;
-                            //   _targetDrawerWidth =
-                            //       _targetDrawerWidth.clamp(150.0, 500.0);
-                            // });
                           },
                           child: _isHovered
                               ? Container(

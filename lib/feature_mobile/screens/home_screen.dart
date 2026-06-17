@@ -9,12 +9,12 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
 import '../../common/widgets/custom_app_bar.dart';
+import '../../common/widgets/no_note_widget.dart';
 import '../../constants/strings.dart';
 import '../../common/models/note_model.dart';
 import '../../common/providers/note_provider.dart';
 import '../widgets/home_drawer.dart';
-import '../widgets/no_note_widget.dart';
-import '../widgets/note_view.dart';
+import '../../common/widgets/note_view.dart';
 import 'note_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -46,11 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void openNote(NoteModel note) async {
+  void openNote(NoteModel note)  {
     if (selectedNotes.isNotEmpty) {
       selectNote(note);
     } else {
-      await context.read<NoteProvider>().setOpenNote(note.uuid);
+       context.read<NoteProvider>().setOpenNote(note.uuid);
       if (!mounted) return;
       isMobile
           ? Navigation.navigateTo(
@@ -126,7 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       Strings.areYouSure,
       () async {
-        await context.read<NoteProvider>().deleteNote(uuid);
+        context.read<NoteProvider>().deleteNote(
+              uuid,
+              shouldRefresh: false,
+            );
         selectedNotes.clear();
         if (mounted) {
           Navigator.pop(context);
@@ -146,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void duplicateNote(NoteModel originalNote) async {
+  void duplicateNote(NoteModel originalNote) {
     final duplicateUuid = Uuid().v4();
 
     final duplicateNote = NoteModel(
@@ -157,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
       isPinned: originalNote.isPinned,
     );
 
-    await context.read<NoteProvider>().saveNote(duplicateNote);
+    context.read<NoteProvider>().saveNote(duplicateNote);
   }
 
   List<NoteItem> processNotes(List<NoteModel> notes) {
@@ -242,7 +245,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final size = MediaQuery.sizeOf(context);
     final notes = context.watch<NoteProvider>().notes;
     final processedList = processNotes(notes);
 
@@ -274,7 +276,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   notes.isEmpty
                       ? NoNoteWidget()
-                      : context.watch<SystemSettingsProvider>().systemSettingsModel.viewMode
+                      : context
+                              .watch<SystemSettingsProvider>()
+                              .systemSettingsModel
+                              .viewMode
                           ? Expanded(
                               child: GridView.builder(
                                 gridDelegate:
