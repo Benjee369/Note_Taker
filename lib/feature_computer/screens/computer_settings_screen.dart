@@ -6,7 +6,6 @@ import 'package:notes/feature_computer/widgets/appearance_tab.dart';
 import 'package:notes/feature_computer/widgets/settings_tile_widget.dart';
 import 'package:notes/feature_computer/widgets/updates_tab.dart';
 import 'package:provider/provider.dart';
-
 import '../../constants/strings.dart';
 
 class ComputerSettingsScreen extends StatefulWidget {
@@ -68,16 +67,19 @@ class _ComputerSettingsScreenState extends State<ComputerSettingsScreen> {
                       title: Strings.appearance,
                       icon: Icons.looks_rounded,
                       onTap: (title) => changeTab(index, 0, title),
+                      isSelected: index.currentIndex == 0,
                     ),
                     SettingsTileWidget(
                       title: Strings.account,
                       icon: Icons.person_2_rounded,
                       onTap: (title) => changeTab(index, 1, title),
+                      isSelected: index.currentIndex == 1,
                     ),
                     SettingsTileWidget(
                       title:Strings.updates,
                       icon: Icons.update_rounded,
                       onTap: (title) => changeTab(index, 2, title),
+                      isSelected: index.currentIndex == 2,
                     ),
                   ],
                 ),
@@ -89,10 +91,13 @@ class _ComputerSettingsScreenState extends State<ComputerSettingsScreen> {
                     children: [
                       Row(
                         children: [
-                          TextWidget(
-                            text: subTitle,
-                            size: 17,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(
+                            width: 100,
+                            child: TextWidget(
+                              text: subTitle,
+                              size: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(width: 320),
                           IconButton(

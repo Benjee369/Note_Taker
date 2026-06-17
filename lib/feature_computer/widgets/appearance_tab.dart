@@ -33,7 +33,7 @@ class _AppearanceTabState extends State<AppearanceTab> {
                 ),
               ),
               gapW4,
-              TextWidget(text: Strings.darkMode),
+              TextWidget(text: Strings.darkMode, align: TextAlign.center,),
               Spacer(),
               Switch(
                 value: !systemSettings.systemSettingsModel.theme,

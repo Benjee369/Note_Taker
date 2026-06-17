@@ -10,6 +10,7 @@ SystemSettingsModel _$SystemSettingsModelFromJson(Map<String, dynamic> json) =>
     SystemSettingsModel(
       theme: json['theme'] as bool? ?? false,
       viewMode: json['viewMode'] as bool? ?? false,
+      sideBarWidth: (json['sideBarWidth'] as num?)?.toDouble() ?? 400,
     );
 
 Map<String, dynamic> _$SystemSettingsModelToJson(
@@ -17,4 +18,5 @@ Map<String, dynamic> _$SystemSettingsModelToJson(
     <String, dynamic>{
       'theme': instance.theme,
       'viewMode': instance.viewMode,
+      'sideBarWidth': instance.sideBarWidth,
     };

@@ -76,13 +76,13 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future pinNote(NoteModel note) async {
-    final updatedNote = note.copyWith(pinned: true);
+    final updatedNote = note.copyWith(isPinned: true);
     await noteDatabase.saveNote(updatedNote);
     getNotes();
   }
 
   Future unpinNote(NoteModel note) async {
-    final updatedNote = note.copyWith(pinned: false);
+    final updatedNote = note.copyWith(isPinned: false);
     await noteDatabase.saveNote(updatedNote);
     getNotes();
   }

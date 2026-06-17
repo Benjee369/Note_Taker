@@ -12,6 +12,7 @@ class SystemSettingsProvider with ChangeNotifier {
   SystemSettingsModel _systemSettingsModel = SystemSettingsModel(
     theme: false,
     viewMode: false,
+    sideBarWidth: 400,
   );
   SystemSettingsModel get systemSettingsModel => _systemSettingsModel;
 
@@ -30,6 +31,20 @@ class SystemSettingsProvider with ChangeNotifier {
     );
     _systemSettingsModel = updatedSettings;
     systemSettingsDatabase.setSystemSettings(updatedSettings);
+    notifyListeners();
+  }
+
+  void setSideBarWidth(
+    double width, {
+    bool shouldSave = true,
+  }) {
+    final updatedSettings = _systemSettingsModel.copyWith(
+      sideBarWidth: width,
+    );
+    _systemSettingsModel = updatedSettings;
+    if (shouldSave) {
+      systemSettingsDatabase.setSystemSettings(updatedSettings);
+    }
     notifyListeners();
   }
 

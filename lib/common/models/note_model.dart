@@ -28,14 +28,14 @@ class NoteModel {
     String? content,
     DateTime? createDate,
     DateTime? updatedDate,
-    bool? pinned,
+    bool? isPinned,
   }) {
     return NoteModel(
       uuid: uuid ?? this.uuid,
       content: content ?? this.content,
       createdDate: createDate ?? createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
-      isPinned: pinned ?? isPinned,
+      isPinned: isPinned ?? this.isPinned,
     );
   }
 }
