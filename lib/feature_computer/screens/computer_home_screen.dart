@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/models/note_model.dart';
 import '../../common/providers/note_provider.dart';
+import 'computer_settings_screen.dart';
 
 class ComputerHomeScreen extends StatefulWidget {
   final Widget noteView;
@@ -80,6 +81,18 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
     await context.read<NoteProvider>().saveNote(note);
   }
 
+  Future<dynamic> settingsDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          content: ComputerSettingsScreen(),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -112,6 +125,9 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
                     buttonType: AppBarButtonType.custom,
                     customIcon: Icons.settings,
                     title: 'Menu',
+                    onBackPress: () async {
+                      await settingsDialog(context);
+                    },
                   ),
                   body: noteProvider.notes.isEmpty
                       ? NoNoteWidget()

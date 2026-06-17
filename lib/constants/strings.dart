@@ -26,4 +26,8 @@ class Strings {
   static const String gridView = "Grid view";
   static const String listView = "List view";
 
+  //!Computer Settings
+  static const String appearance = "Appearance";
+  static const String account = "Account";
+  static const String updates = "Updates";
 }

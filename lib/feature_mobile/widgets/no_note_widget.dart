@@ -20,14 +20,14 @@ class NoNoteWidget extends StatelessWidget {
         children: [
           SvgPicture.asset(
             AppImages.noNotes,
-            width: 200,
-            height: 200,
+            width: 150,
+            height: 150,
           ),
           gapH12,
           TextWidget(
             text: Strings.addYourFirst,
             fontWeight: FontWeight.bold,
-            size: 20,
+            // size: 20,
           ),
         ],
       ),

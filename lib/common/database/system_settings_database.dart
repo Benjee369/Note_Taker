@@ -13,13 +13,16 @@ class SystemSettingsDatabase {
     return _systemSettingsBox!;
   }
 
-  Future<SystemSettingsModel> getSystemSettings() async {
+  Future<SystemSettingsModel?> getSystemSettings() async {
     final box = await _getBox();
     final data = box.get('settings');
-    final settings = SystemSettingsModel.fromJson(
-      Map<String, dynamic>.from(data),
-    );
+    if(data != null){
+      final settings = SystemSettingsModel.fromJson(
+        Map<String, dynamic>.from(data),
+      );
     return settings;
+    }
+    return null;
   }
 
   Future setSystemSettings(

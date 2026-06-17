@@ -16,7 +16,9 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    context.read<SystemSettingsDatabase>().getSystemSettings();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SystemSettingsDatabase>().getSystemSettings();
+    });
   }
 
   @override

@@ -35,7 +35,9 @@ class SystemSettingsProvider with ChangeNotifier {
 
   Future<void> getSystemSettings() async {
     final settings = await systemSettingsDatabase.getSystemSettings();
-    _systemSettingsModel = settings;
+    if (settings != null) {
+      _systemSettingsModel = settings;
+    }
     notifyListeners();
   }
 }
