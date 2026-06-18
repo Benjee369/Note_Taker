@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'text_widget.dart';
-import '../../constants/app_images.dart';
 import '../../constants/app_sizes.dart';
-import '../../constants/strings.dart';
 
 class NoNoteWidget extends StatelessWidget {
+  final String message;
+  final String image;
+
   const NoNoteWidget({
-    super.key,
+    super.key, required this.message, required this.image,
   });
 
   @override
@@ -19,13 +19,13 @@ class NoNoteWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SvgPicture.asset(
-            AppImages.noNotes,
+            image,
             width: 150,
             height: 150,
           ),
           gapH12,
           TextWidget(
-            text: Strings.addYourFirst,
+            text: message,
             fontWeight: FontWeight.bold,
             // size: 20,
           ),

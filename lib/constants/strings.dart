@@ -1,12 +1,14 @@
 class Strings {
   static const String noteTaker = 'Note Taker';
   static const String addYourFirst = 'Add your first note';
+  static const String openUpNote = 'Open up a note';
   static const String notes = 'Notes';
   static const String note = 'Note';
 
   static const String ok = 'Ok';
   static const String no = 'No';
   static const String cancel = 'Cancel';
+  static const String menu = 'Menu';
 
   //!Note actions
   static const String pin = 'Pin';

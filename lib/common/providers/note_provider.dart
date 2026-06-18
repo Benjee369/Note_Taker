@@ -11,7 +11,9 @@ class NoteProvider with ChangeNotifier {
   NoteProvider(
     this.noteDatabase,
     this.openNoteDatabase,
-  );
+  ) {
+    getNotes();
+  }
 
   List<NoteModel> _notes = [];
   bool _isGettingNotes = false;
@@ -44,20 +46,32 @@ class NoteProvider with ChangeNotifier {
   Future<void> clearOpenNote() async {
     await openNoteDatabase.clearOpenNote();
     _noteModel = null;
+    notifyListeners();
   }
 
   Future<void> saveNote(NoteModel note) async {
-    _notes.add(note);
+    final index = _notes.indexWhere((n) => n.uuid == note.uuid);
+    if (index == -1) {
+      _notes.add(note);
+    } else {
+      _notes[index] = note;
+    }
     notifyListeners();
 
-    noteDatabase.saveNote(note);
+    await noteDatabase.saveNote(note);
     setOpenNote(note.uuid);
-    getNotes();
+    // getNotes();
   }
 
   void getSingleNote(String uuid) {
-    final note = _notes.firstWhere((n) => n.uuid == uuid);
-    _noteModel = note;
+    final index = _notes.indexWhere((n) => n.uuid == uuid);
+    if (index == -1) {
+      _noteModel = null;
+    } else {
+      _noteModel = _notes[index];
+    }
+    // final note = _notes.firstWhere((n) => n.uuid == uuid);
+    // _noteModel = note;
     notifyListeners();
   }
 
@@ -68,43 +82,25 @@ class NoteProvider with ChangeNotifier {
 
     final dbNotes = await noteDatabase.getNotes();
     _notes = dbNotes;
-    notifyListeners();
+    // notifyListeners();
 
     _isGettingNotes = false;
     notifyListeners();
   }
 
-  void pinNote(NoteModel note) {
-    final updatedNote = note.copyWith(isPinned: true);
-
-    final index = _notes.indexWhere(
-      (n) => n.uuid == updatedNote.uuid,
-    );
+  Future<void> setPinned(NoteModel note, bool pinned) async {
+    final updated = note.copyWith(isPinned: pinned);
+    final index = _notes.indexWhere((n) => n.uuid == updated.uuid);
     if (index != -1) {
-      _notes[index] = updatedNote;
+      _notes[index] = updated;
     }
     notifyListeners();
-    noteDatabase.saveNote(updatedNote);
-    getNotes();
-  }
-
-  void unpinNote(NoteModel note) {
-    final updatedNote = note.copyWith(isPinned: false);
-
-    final index = _notes.indexWhere(
-      (n) => n.uuid == updatedNote.uuid,
-    );
-    if (index != -1) {
-      _notes[index] = updatedNote;
-    }
-    notifyListeners();
-    noteDatabase.saveNote(updatedNote);
-    getNotes();
+    await noteDatabase.saveNote(updated);
   }
 
   Future bulkDeleteNotes(Set<String> uuids) async {
-    _notes.removeWhere((note) => uuids.contains(note.uuid));
-    notifyListeners();
+    // _notes.removeWhere((note) => uuids.contains(note.uuid));
+    // notifyListeners();
 
     for (String uuid in uuids) {
       deleteNote(
@@ -121,7 +117,9 @@ class NoteProvider with ChangeNotifier {
     _notes.removeWhere((n) => n.uuid == uuid);
     notifyListeners();
     noteDatabase.deleteNote(uuid);
-    clearOpenNote();
+    if (_noteModel?.uuid == uuid) {
+      await clearOpenNote();
+    }
     if (shouldRefresh) {
       getNotes();
     }

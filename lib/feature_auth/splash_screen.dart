@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hive/hive.dart';
 import 'package:notes/common/widgets/text_widget.dart';
 import 'package:notes/constants/strings.dart';
-import 'package:provider/provider.dart';
 import '../common/navigation/navigation.dart';
 import '../constants/app_images.dart';
 import '../constants/app_sizes.dart';
-import '../common/providers/note_provider.dart';
 import '../feature_mobile/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,17 +19,18 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getNotes();
+    //   getNotes();
+    init();
     });
   }
 
-  Future getNotes() async {
-    Hive.deleteFromDisk();
-    await context.read<NoteProvider>().getNotes();
+  void init() {
+    // Hive.deleteFromDisk();
+    // await context.read<NoteProvider>().getNotes();
     if (mounted) {
       Navigation.navigateAndReplace(
         context,
-       HomeScreen(),
+        HomeScreen(),
       );
     }
   }
@@ -52,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 width: 200,
               ),
               gapH12,
-              TextWidget(text: Strings.noteTaker)
+              TextWidget(text: Strings.noteTaker),
             ],
           ),
         ),

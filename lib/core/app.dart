@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:notes/common/database/system_settings_database.dart';
 import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/feature_auth/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +16,7 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SystemSettingsDatabase>().getSystemSettings();
+      // context.read<SystemSettingsDatabase>().getSystemSettings();
     });
   }
 

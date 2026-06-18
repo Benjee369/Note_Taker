@@ -2,7 +2,6 @@
 // the ui is all me, thought id point that out
 
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/common/widgets/custom_app_bar.dart';
@@ -14,6 +13,7 @@ import 'package:uuid/uuid.dart';
 import '../../common/models/note_model.dart';
 import '../../common/providers/note_provider.dart';
 import '../../common/widgets/no_note_widget.dart';
+import '../../constants/app_images.dart';
 import 'computer_settings_screen.dart';
 
 class ComputerHomeScreen extends StatefulWidget {
@@ -143,13 +143,16 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
                   appBar: CustomAppBar(
                     buttonType: AppBarButtonType.custom,
                     customIcon: Icons.settings,
-                    title: 'Menu',
+                    title: Strings.menu,
                     onBackPress: () async {
                       await settingsDialog(context);
                     },
                   ),
                   body: noteProvider.notes.isEmpty
-                      ? NoNoteWidget()
+                      ? const NoNoteWidget(
+                          message: Strings.addYourFirst,
+                          image: AppImages.noNotes,
+                        )
                       : widget.noteView,
                 ),
               ),
@@ -159,34 +162,27 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
                 top: 0,
                 bottom: 0,
                 child: Scaffold(
-                  appBar: CustomAppBar(
-                    buttonType: AppBarButtonType.custom,
-                    title: Strings.note,
-                    customIcon:
-                        _isDrawerOpen ? Icons.chevron_left_rounded : Icons.menu,
-                    onBackPress: toggleDrawer,
-                    actions: [
-                      Builder(
-                        builder: (context) {
-                          return IconButton(
-                            onPressed: () {
-                              log('end drawer button clicked');
-                              Scaffold.of(context).openEndDrawer();
-                            },
-                            icon: Icon(Icons.info),
-                          );
-                        }
-                      ),
-                    ],
-                  ),
                   endDrawer: ComputerNoteDrawer(),
-                  body: noteProvider.noteModel != null
-                      ? Consumer<NoteProvider>(
-                          builder: (context, noteProvider, child) {
-                            return const NoteScreen();
-                          },
-                        )
-                      : const NoNoteWidget(),
+                  body: noteProvider.notes.isNotEmpty
+                      ? noteProvider.noteModel != null
+                          ? Consumer<NoteProvider>(
+                              builder: (context, noteProvider, child) {
+                                return NoteScreen(
+                                  isDrawerOpen: _isDrawerOpen,
+                                  toggleDrawer: () {
+                                    toggleDrawer();
+                                  },
+                                );
+                              },
+                            )
+                          : NoNoteWidget(
+                              message: Strings.openUpNote,
+                              image: AppImages.openNote,
+                            )
+                      : const NoNoteWidget(
+                          message: Strings.addYourFirst,
+                          image: AppImages.noNotes,
+                        ),
                 ),
               ),
               if (_isDrawerOpen)

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -12,10 +11,14 @@ import '../../common/providers/note_provider.dart';
 
 class NoteScreen extends StatefulWidget {
   final bool? isNewNote;
+  final bool? isDrawerOpen;
+  final VoidCallback? toggleDrawer;
 
   const NoteScreen({
     super.key,
     this.isNewNote = false,
+    this.isDrawerOpen = true,
+    this.toggleDrawer,
   });
 
   @override
@@ -36,8 +39,8 @@ class _NoteScreenState extends State<NoteScreen> {
       uuid: isNew ? _uuid : noteProvider!.uuid,
       content: _noteController.text,
       createdDate: isNew ? now : noteProvider!.createdDate,
-      updatedDate: DateTime.now(),
-      isPinned: noteProvider!.isPinned,
+      updatedDate: now,
+      isPinned: noteProvider?.isPinned ?? false,
     );
     await context.read<NoteProvider>().saveNote(note);
   }
@@ -51,8 +54,8 @@ class _NoteScreenState extends State<NoteScreen> {
     });
   }
 
-  void closeNote() async {
-    await context.read<NoteProvider>().clearOpenNote();
+  void closeNote() {
+    context.read<NoteProvider>().clearOpenNote();
     if (!mounted) return;
     Navigator.pop(context);
   }
@@ -69,14 +72,18 @@ class _NoteScreenState extends State<NoteScreen> {
       }
     });
 
-    noteProvider.addListener(() {
-      _onNoteChanged();
-    });
+    noteProvider.addListener(_onNoteChanged);
   }
 
   void _onNoteChanged() {
-    final noteProvider = context.read<NoteProvider>();
-    _noteController.text = noteProvider.noteModel?.content ?? '';
+    final content = context.read<NoteProvider>().noteModel?.content ?? '';
+
+    if (_noteController.text != content) {
+      _noteController.value = TextEditingValue(
+        text: content,
+        selection: TextSelection.collapsed(offset: content.length),
+      );
+    }
   }
 
   @override
@@ -84,14 +91,11 @@ class _NoteScreenState extends State<NoteScreen> {
     super.dispose();
     _noteController.dispose();
     context.read<NoteProvider>().removeListener(_onNoteChanged);
-
     _debouncer?.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final noteProvider = context.watch<NoteProvider>().noteModel;
-
     return Consumer<NoteProvider>(
       builder: (context, noteProvider, child) {
         return SafeArea(
@@ -102,7 +106,27 @@ class _NoteScreenState extends State<NoteScreen> {
                     buttonType: AppBarButtonType.backButton,
                     onBackPress: () => closeNote(),
                   )
-                : null,
+                : CustomAppBar(
+                    buttonType: AppBarButtonType.custom,
+                    title: Strings.note,
+                    customIcon: widget.isDrawerOpen == true
+                        ? Icons.chevron_left_rounded
+                        : Icons.menu,
+                    onBackPress:()=> widget.toggleDrawer?.call(),
+                    actions: [
+                      Builder(
+                        builder: (context) {
+                          return IconButton(
+                            onPressed: () {
+                              log('end drawer button clicked');
+                              Scaffold.of(context).openEndDrawer();
+                            },
+                            icon: Icon(Icons.info),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
             body: Column(
               children: [
                 Expanded(

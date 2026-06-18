@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
 import '../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/no_note_widget.dart';
+import '../../constants/app_images.dart';
 import '../../constants/strings.dart';
 import '../../common/models/note_model.dart';
 import '../../common/providers/note_provider.dart';
@@ -143,9 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void pin(NoteModel note) {
     if (note.isPinned) {
-      context.read<NoteProvider>().unpinNote(note);
+      context.read<NoteProvider>().setPinned(note, false);
     } else {
-      context.read<NoteProvider>().pinNote(note);
+      context.read<NoteProvider>().setPinned(note, true);
     }
   }
 
@@ -275,7 +276,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   notes.isEmpty
-                      ? NoNoteWidget()
+                      ? const NoNoteWidget(
+                    message: Strings.addYourFirst,
+                    image: AppImages.noNotes,
+                  )
                       : context
                               .watch<SystemSettingsProvider>()
                               .systemSettingsModel
