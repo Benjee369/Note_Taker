@@ -12,6 +12,7 @@ NoteModel _$NoteModelFromJson(Map<String, dynamic> json) => NoteModel(
       createdDate: DateTime.parse(json['createdDate'] as String),
       updatedDate: DateTime.parse(json['updatedDate'] as String),
       isPinned: json['isPinned'] as bool? ?? false,
+      folderUuid: json['folderUuid'] as String?,
     );
 
 Map<String, dynamic> _$NoteModelToJson(NoteModel instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$NoteModelToJson(NoteModel instance) => <String, dynamic>{
       'createdDate': instance.createdDate.toIso8601String(),
       'updatedDate': instance.updatedDate.toIso8601String(),
       'isPinned': instance.isPinned,
+      'folderUuid': instance.folderUuid,
     };

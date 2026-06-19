@@ -23,13 +23,20 @@ class NoteDatabase {
   }
 
   Future<List<NoteModel>> getNotes() async {
-    log('getting notes...', name: 'NoteDatabase');
+    log(
+      'getting notes...',
+      name: 'NoteDatabase',
+    );
     final box = await getBox();
 
     final values = box.values;
     if (values.isNotEmpty) {
       final notes = values
-          .map((note) => NoteModel.fromJson(Map<String, dynamic>.from(note)))
+          .map(
+            (note) => NoteModel.fromJson(
+              Map<String, dynamic>.from(note),
+            ),
+          )
           .toList();
       log(
         'got (${notes.length})list of notes $notes...',
@@ -48,7 +55,9 @@ class NoteDatabase {
     final box = await getBox();
     final note = await box.get(uuid);
     if (note == null) return null;
-    return NoteModel.fromJson(Map<String, dynamic>.from(note));
+    return NoteModel.fromJson(
+      Map<String, dynamic>.from(note),
+    );
   }
 
   Future deleteNote(String uuid) async {

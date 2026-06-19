@@ -76,7 +76,11 @@ class _NoteScreenState extends State<NoteScreen> {
   }
 
   void _onNoteChanged() {
-    final content = context.read<NoteProvider>().noteModel?.content ?? '';
+    final note = context.read<NoteProvider>();
+    final content = note.noteModel?.content ?? '';
+    if (note.noteModel == null) {
+      Scaffold.of(context).closeEndDrawer();
+    }
 
     if (_noteController.text != content) {
       _noteController.value = TextEditingValue(
@@ -96,6 +100,8 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+
     return Consumer<NoteProvider>(
       builder: (context, noteProvider, child) {
         return SafeArea(
@@ -112,18 +118,13 @@ class _NoteScreenState extends State<NoteScreen> {
                     customIcon: widget.isDrawerOpen == true
                         ? Icons.chevron_left_rounded
                         : Icons.menu,
-                    onBackPress:()=> widget.toggleDrawer?.call(),
+                    onBackPress: () => widget.toggleDrawer?.call(),
                     actions: [
-                      Builder(
-                        builder: (context) {
-                          return IconButton(
-                            onPressed: () {
-                              log('end drawer button clicked');
-                              Scaffold.of(context).openEndDrawer();
-                            },
-                            icon: Icon(Icons.info),
-                          );
+                      IconButton(
+                        onPressed: () {
+                          Scaffold.of(context).openEndDrawer();
                         },
+                        icon: Icon(Icons.info),
                       ),
                     ],
                   ),
@@ -139,6 +140,11 @@ class _NoteScreenState extends State<NoteScreen> {
                         horizontal: 10.0,
                       ),
                       border: InputBorder.none,
+                    ),
+                    style: TextStyle(
+                      color: theme.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20
                     ),
                     maxLines: 1000,
                   ),

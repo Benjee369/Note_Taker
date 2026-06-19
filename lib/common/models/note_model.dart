@@ -10,6 +10,7 @@ class NoteModel {
   final DateTime updatedDate;
   @JsonKey(defaultValue: false)
   final bool isPinned;
+  final String? folderUuid;
 
   NoteModel({
     required this.uuid,
@@ -17,6 +18,7 @@ class NoteModel {
     required this.createdDate,
     required this.updatedDate,
     required this.isPinned,
+    this.folderUuid,
   });
 
   factory NoteModel.fromJson(Map<String, dynamic> json) =>
@@ -29,6 +31,7 @@ class NoteModel {
     DateTime? createDate,
     DateTime? updatedDate,
     bool? isPinned,
+    String? folderUuid,
   }) {
     return NoteModel(
       uuid: uuid ?? this.uuid,
@@ -36,6 +39,7 @@ class NoteModel {
       createdDate: createDate ?? createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
       isPinned: isPinned ?? this.isPinned,
+      folderUuid: folderUuid ?? this.folderUuid,
     );
   }
 }

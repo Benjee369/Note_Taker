@@ -51,8 +51,8 @@ class _ComputerSettingsScreenState extends State<ComputerSettingsScreen> {
                 decoration: BoxDecoration(
                   color: theme.surface,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(30),
+                    topLeft: Radius.circular(30),
                   ),
                 ),
                 child: Column(

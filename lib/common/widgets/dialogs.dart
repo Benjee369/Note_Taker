@@ -23,7 +23,11 @@ class Dialogs {
               ? Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(icon, size: iconSize, color: iconColor),
+                    Icon(
+                      icon,
+                      size: iconSize,
+                      color: iconColor,
+                    ),
                     const SizedBox(height: 16),
                     TextWidget(
                       text: dialogMessage,
@@ -36,7 +40,9 @@ class Dialogs {
                 ),
           actions: <Widget>[
             TextButton(
-              child: Center(child: Text(text ?? Strings.ok)),
+              child: Center(
+                child: Text(text ?? Strings.ok),
+              ),
               onPressed: () {
                 function.call();
               },

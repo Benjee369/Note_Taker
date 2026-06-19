@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:notes/common/models/folder_model.dart';
+import 'package:notes/common/providers/note_provider.dart';
 import 'note_widget.dart';
 import 'text_widget.dart';
 import '../models/note_model.dart';
 
 class NoteView extends StatelessWidget {
   final int index;
-  final List<NoteItem> processedList;
+  final List<Universal> processedList;
   final Set<String> selectedNotes;
   final Function(LongPressStartDetails, NoteModel)? onLongPress;
   final Function(TapDownDetails, NoteModel)? onSecondaryTap;
+  final Function(TapDownDetails, FolderModel)? onFolderSecondaryTap;
   final Function(NoteModel) onTap;
 
   const NoteView({
@@ -19,41 +22,52 @@ class NoteView extends StatelessWidget {
     this.onLongPress,
     this.onSecondaryTap,
     required this.onTap,
+    this.onFolderSecondaryTap,
   });
 
   @override
   Widget build(context) {
     final note = processedList[index];
 
-    if (note is NoteHeader) {
-      return Padding(
-        padding: const EdgeInsets.only(left: 10),
-        child: TextWidget(
-          text: note.title,
-          size: 20,
-          fontWeight: FontWeight.bold,
+    if (note is Folder) {
+      final f = note.folderModel;
+
+      return InkWell(
+        onSecondaryTapDown: (details) {
+          onFolderSecondaryTap?.call(
+            details,
+            f,
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: TextWidget(
+            text: note.folderModel.name,
+            size: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       );
     }
 
-    if (note is NoteListItem) {
-      final selected = selectedNotes.contains(note.note.uuid);
-
+    if (note is ActualNote) {
+      final n = note.noteModel;
+      final selected = selectedNotes.contains(n.uuid);
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onLongPressStart: (details) => onLongPress?.call(
           details,
-          note.note,
+          n,
         ),
         onSecondaryTapDown: (details) {
           onSecondaryTap?.call(
             details,
-            note.note,
+            n,
           );
         },
-        onTap: () => onTap.call(note.note),
+        onTap: () => onTap.call(n),
         child: NoteWidget(
-          note: note.note,
+          note: n,
           isSelected: selected,
         ),
       );
@@ -63,14 +77,14 @@ class NoteView extends StatelessWidget {
   }
 }
 
-abstract class NoteItem {}
-
-class NoteHeader extends NoteItem {
-  final String title;
-  NoteHeader(this.title);
-}
-
-class NoteListItem extends NoteItem {
-  final NoteModel note;
-  NoteListItem(this.note);
-}
+// abstract class NoteItem {}
+//
+// class NoteHeader extends NoteItem {
+//   final String title;
+//   NoteHeader(this.title);
+// }
+//
+// class NoteListItem extends NoteItem {
+//   final NoteModel note;
+//   NoteListItem(this.note);
+// }

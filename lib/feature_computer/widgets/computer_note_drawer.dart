@@ -11,8 +11,10 @@ class ComputerNoteDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final note = context.read<NoteProvider>().noteModel;
-    String formattedDate(DateTime date) {
-      return DateFormat('EEE, yyyy-MM-dd HH:mm').format(date);
+    String formattedDate(DateTime? date) {
+      return date == null
+          ? ''
+          : DateFormat('EEE, yyyy-MM-dd HH:mm').format(date);
     }
 
     return Drawer(
@@ -31,15 +33,15 @@ class ComputerNoteDrawer extends StatelessWidget {
           ),
           NoteInformationWidget(
             title: 'Birth date:',
-            value: formattedDate(note!.createdDate),
+            value: formattedDate(note?.createdDate),
           ),
           NoteInformationWidget(
             title: 'Updated date:',
-            value: formattedDate(note.updatedDate),
+            value: formattedDate(note?.updatedDate),
           ),
           NoteInformationWidget(
             title: 'Characters:',
-            value: note.content.length.toString(),
+            value: note?.content.length.toString() ?? '',
           ),
         ],
       ),
