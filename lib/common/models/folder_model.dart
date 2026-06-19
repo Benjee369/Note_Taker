@@ -8,13 +8,25 @@ class FolderModel {
   final String name;
   final DateTime createdDate;
 
-  FolderModel(
-    this.uuid,
-    this.name,
-    this.createdDate,
-  );
+  FolderModel({
+    required this.uuid,
+    required this.name,
+    required this.createdDate,
+  });
 
   factory FolderModel.fromJson(Map<String, dynamic> json) =>
       _$FolderModelFromJson(json);
   Map<String, dynamic> toJson() => _$FolderModelToJson(this);
+
+  FolderModel copyWith({
+    String? uuid,
+    String? name,
+    DateTime? createdDate,
+  }) {
+    return FolderModel(
+      uuid: uuid ?? this.uuid,
+      name: name ?? this.name,
+      createdDate: createdDate ?? this.createdDate,
+    );
+  }
 }

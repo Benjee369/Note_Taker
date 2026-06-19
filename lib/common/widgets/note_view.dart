@@ -53,6 +53,7 @@ class NoteView extends StatelessWidget {
     if (note is ActualNote) {
       final n = note.noteModel;
       final selected = selectedNotes.contains(n.uuid);
+      final isInFolder = note.noteModel.folderUuid != null;
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onLongPressStart: (details) => onLongPress?.call(
@@ -69,6 +70,7 @@ class NoteView extends StatelessWidget {
         child: NoteWidget(
           note: n,
           isSelected: selected,
+          isInFolder: isInFolder,
         ),
       );
     }

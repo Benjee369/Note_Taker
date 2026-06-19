@@ -126,7 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
             deleteNote(note.uuid);
             break;
           case 5:
-            // addToFolder(note, position);
             Future.delayed(Duration.zero, () {
               addToFolder(note, position);
             });
@@ -141,8 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Offset position,
   ) {
     final folders = context.read<NoteProvider>().folders;
-    // final position = details?.globalPosition ?? tapDownDetails?.globalPosition;
-    // if (position == null) return;
 
     CustomPopupMenu.show(
       context: context,
@@ -208,24 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<NoteProvider>().saveNote(duplicateNote);
   }
 
-  // List<NoteItem> processNotes(List<NoteModel> notes) {
-  //   List<NoteItem> processedList = [];
-  //
-  //   final pinnedNotes = notes.where((note) => note.isPinned).toList();
-  //   final unpinnedNotes = notes.where((note) => !note.isPinned).toList();
-  //
-  //   if (pinnedNotes.isNotEmpty) {
-  //     processedList.add(NoteHeader('Pinned'));
-  //     processedList.addAll(pinnedNotes.map((n) => NoteListItem(n)));
-  //   }
-  //
-  //   if (unpinnedNotes.isNotEmpty) {
-  //     processedList.add(NoteHeader('All'));
-  //     processedList.addAll(unpinnedNotes.map((n) => NoteListItem(n)));
-  //   }
-  //   return processedList;
-  // }
-
   void selectNote(NoteModel note) {
     if (selectedNotes.contains(note.uuid)) {
       setState(() {
@@ -287,9 +266,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void createFolder() async {
     final id = uuid.v4();
     final folder = FolderModel(
-      id,
-      folderNameController.text,
-      now,
+      uuid: id,
+      name: folderNameController.text,
+      createdDate: now,
     );
     Dialogs.dialog(
       context,
@@ -302,6 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () async {
             await context.read<NoteProvider>().createFolder(folder);
             if (!mounted) return;
+            folderNameController.clear();
             Navigator.pop(context);
           },
           icon: Icon(Icons.currency_yen),
@@ -323,13 +303,21 @@ class _HomeScreenState extends State<HomeScreen> {
       items: [
         PopupMenuItemData(
           value: 1,
-          icon: Icons.push_pin_rounded,
-          label: 'Delete folder',
+          icon: Icons.rule_folder_rounded,
+          label: Strings.changeName,
+        ),
+        PopupMenuItemData(
+          value: 2,
+          icon: Icons.folder_delete_rounded,
+          label: Strings.deleteFolder,
         ),
       ],
       onSelected: (value) {
         switch (value) {
           case 1:
+            changeFolderName(folder);
+            break;
+          case 2:
             deleteFolder(folder.uuid);
             break;
         }
@@ -338,7 +326,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future deleteFolder(String folderUuid) async {
-    await context.read<NoteProvider>().deleteFolder(folderUuid);
+    final noteProvider = context.read<NoteProvider>();
+    final noteCount = noteProvider.notes
+        .where(
+          (n) => n.folderUuid == folderUuid,
+        )
+        .length;
+    Dialogs.dialogWithOptions(
+      context,
+      Strings.areYouSureManyFolder(noteCount),
+      () async {
+        await context.read<NoteProvider>().deleteFolder(folderUuid);
+      },
+      () => Navigator.pop(context),
+      Strings.ok,
+      Strings.cancel,
+    );
+  }
+
+  void changeFolderName(
+    FolderModel folder,
+  ) async {
+    Dialogs.dialog(
+      context,
+      [
+        TextWidget(text: 'Change folder name'),
+        TextField(
+          controller: folderNameController,
+        ),
+        IconButton(
+          onPressed: () async {
+            await context.read<NoteProvider>().changeFolderName(
+                  folder,
+                  folderNameController.text,
+                );
+            if (!mounted) return;
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.check_rounded),
+        ),
+      ],
+    );
   }
 
   @override

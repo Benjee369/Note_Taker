@@ -10,11 +10,13 @@ import '../providers/note_provider.dart';
 class NoteWidget extends StatelessWidget {
   final NoteModel note;
   final bool isSelected;
+  final bool isInFolder;
 
   const NoteWidget({
     super.key,
     required this.note,
     required this.isSelected,
+    required this.isInFolder,
   });
 
   @override
@@ -36,7 +38,8 @@ class NoteWidget extends StatelessWidget {
       scale: isSelected ? 0.99 : 1,
       duration: Duration(milliseconds: 200),
       child: Container(
-        margin: EdgeInsets.fromLTRB(10, 1, isOpen ? 0 : 10, 1),
+        margin:
+            EdgeInsets.fromLTRB(isInFolder ? 30 : 10, 1, isOpen ? 0 : 10, 1),
         padding: EdgeInsets.symmetric(
           vertical: 4,
           horizontal: 8,

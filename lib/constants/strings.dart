@@ -17,10 +17,16 @@ class Strings {
   static const String duplicate = 'Duplicate';
   static const String select = 'Select';
 
+  //!Folder Actions
+  static const String deleteFolder = "Delete folder";
+  static const String changeName = "Change name";
+
   //!Dialogs
   static const String areYouSure = 'Are you sure you want to delete this note?';
   static String areYouSureMany(int count) =>
       'Are you sure you want to delete $count notes';
+  static String areYouSureManyFolder(int count) =>
+      'Are you sure you want to delete this folder with $count notes';
 
   //!Drawer
   static const String settings = "Settings";

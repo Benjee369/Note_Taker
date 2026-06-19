@@ -7,9 +7,9 @@ part of 'folder_model.dart';
 // **************************************************************************
 
 FolderModel _$FolderModelFromJson(Map<String, dynamic> json) => FolderModel(
-      json['uuid'] as String,
-      json['name'] as String,
-      DateTime.parse(json['createdDate'] as String),
+      uuid: json['uuid'] as String,
+      name: json['name'] as String,
+      createdDate: DateTime.parse(json['createdDate'] as String),
     );
 
 Map<String, dynamic> _$FolderModelToJson(FolderModel instance) =>

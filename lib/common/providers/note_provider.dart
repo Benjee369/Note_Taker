@@ -172,6 +172,24 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future changeFolderName(
+    FolderModel folder,
+    String newName,
+  ) async {
+    final updatedFolder = folder.copyWith(
+      name: newName,
+    );
+
+    final index = _folders.indexWhere(
+      (f) => f.uuid == folder.uuid,
+    );
+    if (index != -1) {
+      _folders[index] = updatedFolder;
+    }
+    notifyListeners();
+    await folderDatabase.saveFolder(updatedFolder);
+  }
+
   List<Universal> processNotesAndFolders() {
     List<Universal> processed = [];
     for (final folder in _folders) {
