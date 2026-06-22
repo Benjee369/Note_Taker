@@ -39,10 +39,10 @@ class NoteWidget extends StatelessWidget {
       duration: Duration(milliseconds: 200),
       child: Container(
         margin:
-            EdgeInsets.fromLTRB(isInFolder ? 30 : 10, 1, isOpen ? 0 : 10, 1),
+        // EdgeInsets.fromLTRB(1, 1, isOpen ? 0 : 10, 1),
+        EdgeInsets.fromLTRB(isInFolder ? 30 : 10, 1, isOpen ? 0 : 10, 1),
         padding: EdgeInsets.symmetric(
           vertical: 4,
-
           horizontal: 8,
         ),
         decoration: BoxDecoration(
@@ -58,6 +58,30 @@ class NoteWidget extends StatelessWidget {
           color: isOpen ? theme.secondary : theme.primary,
           child: Row(
             children: [
+              // SizedBox(
+              //   height: 20,
+              //   width: 20,
+              //   child: Column(
+              //     mainAxisAlignment: MainAxisAlignment.start,
+              //     children: [
+              //       Expanded(child: VerticalDivider()),
+              //       Expanded(
+              //         child: Row(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Expanded(child: SizedBox()),
+              //             Expanded(
+              //               child: Align(
+              //                 alignment: Alignment.topCenter,
+              //                 child: Divider(),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               if (isSelected) ...[
                 AnimatedContainer(
                   duration: Duration(milliseconds: 100),

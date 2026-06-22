@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/providers/platform_provider.dart';
@@ -102,8 +103,15 @@ class _NoteScreenState extends State<NoteScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
 
-    return Consumer<NoteProvider>(
-      builder: (context, noteProvider, child) {
+    return Consumer2<NoteProvider, SystemSettingsProvider>(
+      builder: (
+        context,
+        noteProvider,
+        systemSettingProvider,
+        child,
+      ) {
+        final fontSettings =
+            systemSettingProvider.systemSettingsModel.noteFontSettings;
         return SafeArea(
           child: Scaffold(
             appBar: isMobile
@@ -143,8 +151,10 @@ class _NoteScreenState extends State<NoteScreen> {
                     ),
                     style: TextStyle(
                       color: theme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20
+                      fontWeight:
+                          fontSettings.isFontWeighted ? FontWeight.bold : null,
+                      fontSize: fontSettings.fontSize,
+                      height: fontSettings.fontHeight,
                     ),
                     maxLines: 1000,
                   ),

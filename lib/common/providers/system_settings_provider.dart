@@ -14,10 +14,15 @@ class SystemSettingsProvider with ChangeNotifier {
     viewMode: false,
     sideBarWidth: 400,
     themeColorName: 'orange',
+    noteFontSettings: NoteFontSettings(
+      fontSize: 16,
+      isFontWeighted: false,
+      fontHeight: 1.2,
+    ),
   );
   SystemSettingsModel get systemSettingsModel => _systemSettingsModel;
 
-  void toggleTheme() async {
+  void toggleTheme() {
     final updatedSettings = _systemSettingsModel.copyWith(
       theme: !_systemSettingsModel.theme,
     );
@@ -26,7 +31,7 @@ class SystemSettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleViewMode() async {
+  void toggleViewMode() {
     final updatedSettings = _systemSettingsModel.copyWith(
       viewMode: !_systemSettingsModel.viewMode,
     );
@@ -66,9 +71,31 @@ class SystemSettingsProvider with ChangeNotifier {
     }
   }
 
-  Future changeThemeColor(String colorName) async {
+  void changeThemeColor(String colorName) {
     final updatedSettings = _systemSettingsModel.copyWith(
       themeColorName: colorName,
+    );
+    _systemSettingsModel = updatedSettings;
+    systemSettingsDatabase.setSystemSettings(updatedSettings);
+    notifyListeners();
+  }
+
+  void changeFontSize(double size) {
+    final noteFontSettings = _systemSettingsModel.noteFontSettings;
+    final updatedSettings = _systemSettingsModel.copyWith(
+      noteFontSettings: noteFontSettings.copyWith(fontSize: size),
+    );
+    _systemSettingsModel = updatedSettings;
+    systemSettingsDatabase.setSystemSettings(updatedSettings);
+    notifyListeners();
+  }
+
+  void toggleFontWeight() {
+    final noteFontSettings = _systemSettingsModel.noteFontSettings;
+    final updatedSettings = _systemSettingsModel.copyWith(
+      noteFontSettings: noteFontSettings.copyWith(
+        isFontWeighted: !noteFontSettings.isFontWeighted,
+      ),
     );
     _systemSettingsModel = updatedSettings;
     systemSettingsDatabase.setSystemSettings(updatedSettings);
