@@ -337,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Strings.areYouSureManyFolder(noteCount),
       () async {
         await context.read<NoteProvider>().deleteFolder(folderUuid);
-        if(!mounted)return;
+        if (!mounted) return;
         Navigator.pop(context);
       },
       () => Navigator.pop(context),
@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Dialogs.dialog(
       context,
       [
-        TextWidget(text:Strings.changeFolderName),
+        TextWidget(text: Strings.changeFolderName),
         TextField(
           controller: folderNameController,
         ),
@@ -381,135 +381,137 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NoteProvider>(builder: (context, notes, child) {
-      final notesNFolders = notes.processNotesAndFolders();
-      return SafeArea(
-        child: isMobile
-            ? Scaffold(
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () => createNewNote(),
-                  child: Icon(Icons.add),
-                ),
-                appBar: CustomAppBar(
-                  buttonType: AppBarButtonType.menuButton,
-                  title: Strings.notes,
-                  actions: [
-                    if (selectedNotes.isNotEmpty) ...[
-                      IconButton(
-                        onPressed: () => selectAndUnselectAll(),
-                        icon: Icon(Icons.select_all_rounded),
-                      ),
-                      IconButton(
-                        onPressed: () => bulkDeleteNotes(),
-                        icon: Icon(Icons.delete_rounded),
-                      ),
-                    ]
-                  ],
-                ),
-                body: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    notes.notes.isEmpty
-                        ? const NoNoteWidget(
-                            message: Strings.addYourFirst,
-                            image: AppImages.noNotes,
-                          )
-                        : context
-                                .watch<SystemSettingsProvider>()
-                                .systemSettingsModel
-                                .viewMode
-                            ? Expanded(
-                                child: GridView.builder(
-                                  gridDelegate:
-                                      SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 200,
-                                    childAspectRatio: 1,
+    return Consumer<NoteProvider>(
+      builder: (context, notes, child) {
+        final notesNFolders = notes.processNotesAndFolders();
+        return SafeArea(
+          child: isMobile
+              ? Scaffold(
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: () => createNewNote(),
+                    child: Icon(Icons.add),
+                  ),
+                  appBar: CustomAppBar(
+                    buttonType: AppBarButtonType.menuButton,
+                    title: Strings.notes,
+                    actions: [
+                      if (selectedNotes.isNotEmpty) ...[
+                        IconButton(
+                          onPressed: () => selectAndUnselectAll(),
+                          icon: Icon(Icons.select_all_rounded),
+                        ),
+                        IconButton(
+                          onPressed: () => bulkDeleteNotes(),
+                          icon: Icon(Icons.delete_rounded),
+                        ),
+                      ]
+                    ],
+                  ),
+                  body: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      notes.notes.isEmpty
+                          ? const NoNoteWidget(
+                              message: Strings.addYourFirst,
+                              image: AppImages.noNotes,
+                            )
+                          : context
+                                  .watch<SystemSettingsProvider>()
+                                  .systemSettingsModel
+                                  .viewMode
+                              ? Expanded(
+                                  child: GridView.builder(
+                                    gridDelegate:
+                                        SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 200,
+                                      childAspectRatio: 1,
+                                    ),
+                                    itemCount: notesNFolders.length,
+                                    itemBuilder: (context, index) {
+                                      return NoteView(
+                                        index: index,
+                                        processedList: notesNFolders,
+                                        selectedNotes: selectedNotes,
+                                        onTap: (note) => openNote(note),
+                                        onLongPress: (details, note) =>
+                                            onLongPress(
+                                          note,
+                                          details: details,
+                                        ),
+                                        onSecondaryTap: (details, note) {
+                                          onLongPress(
+                                            note,
+                                            tapDownDetails: details,
+                                          );
+                                        },
+                                      );
+                                    },
                                   ),
-                                  itemCount: notesNFolders.length,
-                                  itemBuilder: (context, index) {
-                                    return NoteView(
-                                      index: index,
-                                      processedList: notesNFolders,
-                                      selectedNotes: selectedNotes,
-                                      onTap: (note) => openNote(note),
-                                      onLongPress: (details, note) =>
-                                          onLongPress(
-                                        note,
-                                        details: details,
-                                      ),
-                                      onSecondaryTap: (details, note) {
-                                        onLongPress(
+                                )
+                              : Expanded(
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.all(10),
+                                    itemCount: notesNFolders.length,
+                                    itemBuilder: (context, index) {
+                                      return NoteView(
+                                        index: index,
+                                        processedList: notesNFolders,
+                                        selectedNotes: selectedNotes,
+                                        onTap: (note) => openNote(note),
+                                        onLongPress: (details, note) =>
+                                            onLongPress(
                                           note,
-                                          tapDownDetails: details,
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                              )
-                            : Expanded(
-                                child: ListView.builder(
-                                  padding: EdgeInsets.all(10),
-                                  itemCount: notesNFolders.length,
-                                  itemBuilder: (context, index) {
-                                    return NoteView(
-                                      index: index,
-                                      processedList: notesNFolders,
-                                      selectedNotes: selectedNotes,
-                                      onTap: (note) => openNote(note),
-                                      onLongPress: (details, note) =>
+                                          details: details,
+                                        ),
+                                        onSecondaryTap: (details, note) {
                                           onLongPress(
-                                        note,
-                                        details: details,
-                                      ),
-                                      onSecondaryTap: (details, note) {
-                                        onLongPress(
-                                          note,
-                                          tapDownDetails: details,
-                                        );
-                                      },
-                                    );
-                                  },
+                                            note,
+                                            tapDownDetails: details,
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                  ],
-                ),
-                drawer: HomeDrawer(),
-              )
-            : GestureDetector(
-                onTap: () {
-                  createFolder();
-                },
-                child: ComputerHomeScreen(
-                  noteView: ListView.builder(
-                    itemCount: notesNFolders.length,
-                    itemBuilder: (context, index) {
-                      return NoteView(
-                        index: index,
-                        processedList: notesNFolders,
-                        selectedNotes: selectedNotes,
-                        onTap: (note) => openNote(note),
-                        onLongPress: (details, note) => onLongPress(
-                          note,
-                          details: details,
-                        ),
-                        onSecondaryTap: (details, note) {
-                          onLongPress(
+                    ],
+                  ),
+                  drawer: HomeDrawer(),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    createFolder();
+                  },
+                  child: ComputerHomeScreen(
+                    noteView: ListView.builder(
+                      itemCount: notesNFolders.length,
+                      itemBuilder: (context, index) {
+                        return NoteView(
+                          index: index,
+                          processedList: notesNFolders,
+                          selectedNotes: selectedNotes,
+                          onTap: (note) => openNote(note),
+                          onLongPress: (details, note) => onLongPress(
                             note,
+                            details: details,
+                          ),
+                          onSecondaryTap: (details, note) {
+                            onLongPress(
+                              note,
+                              tapDownDetails: details,
+                            );
+                          },
+                          onFolderSecondaryTap: (details, folder) =>
+                              onFolderLongPress(
+                            folder,
                             tapDownDetails: details,
-                          );
-                        },
-                        onFolderSecondaryTap: (details, folder) =>
-                            onFolderLongPress(
-                          folder,
-                          tapDownDetails: details,
-                        ),
-                      );
-                    },
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-      );
-    });
+        );
+      },
+    );
   }
 }

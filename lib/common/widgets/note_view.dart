@@ -78,15 +78,3 @@ class NoteView extends StatelessWidget {
     return SizedBox.shrink();
   }
 }
-
-// abstract class NoteItem {}
-//
-// class NoteHeader extends NoteItem {
-//   final String title;
-//   NoteHeader(this.title);
-// }
-//
-// class NoteListItem extends NoteItem {
-//   final NoteModel note;
-//   NoteListItem(this.note);
-// }

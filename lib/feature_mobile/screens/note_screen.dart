@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -46,9 +47,23 @@ class _NoteScreenState extends State<NoteScreen> {
     await context.read<NoteProvider>().saveNote(note);
   }
 
-  //basically, if I select a note and then I delete it, the selected note list is not cleared
-
   void onTypingChange(String text) {
+    final isNew = widget.isNewNote == true;
+    final now = DateTime.now();
+    final noteProvider = context.read<NoteProvider>().noteModel;
+
+    final note = NoteModel(
+      uuid: isNew ? _uuid : noteProvider!.uuid,
+      content: _noteController.text,
+      createdDate: isNew ? now : noteProvider!.createdDate,
+      updatedDate: now,
+      isPinned: noteProvider?.isPinned ?? false,
+    );
+    context.read<NoteProvider>().quickSaveNote(
+          note,
+          _noteController.text,
+        );
+
     if (_debouncer?.isActive ?? false) _debouncer?.cancel();
     _debouncer = Timer(const Duration(milliseconds: 1000), () {
       saveNote();
@@ -136,7 +151,7 @@ class _NoteScreenState extends State<NoteScreen> {
                       ),
                     ],
                   ),
-            body: Column(
+            body: Row(
               children: [
                 Expanded(
                   child: TextField(
@@ -158,6 +173,11 @@ class _NoteScreenState extends State<NoteScreen> {
                     ),
                     maxLines: 1000,
                   ),
+                ),
+                VerticalDivider(),
+                SizedBox(
+                  width: 400,
+                  child: Markdown(data: noteProvider.noteModel?.content ?? ''),
                 ),
               ],
             ),

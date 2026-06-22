@@ -20,11 +20,11 @@ class NoteProvider with ChangeNotifier {
   }
 
   List<NoteModel> _notes = [];
-  bool _isGettingNotes = false;
+  // bool _isGettingNotes = false;
   NoteModel? _noteModel;
 
   List<NoteModel> get notes => _notes;
-  bool get isGettingNotes => _isGettingNotes;
+  // bool get isGettingNotes => _isGettingNotes;
   NoteModel? get noteModel => _noteModel;
 
   List<FolderModel> _folders = [];
@@ -69,6 +69,12 @@ class NoteProvider with ChangeNotifier {
 
     await noteDatabase.saveNote(note);
     setOpenNote(note.uuid);
+  }
+
+  void quickSaveNote(NoteModel note, String content) {
+    final updatedNote = note.copyWith(content: content);
+    _noteModel = updatedNote;
+    notifyListeners();
   }
 
   void getSingleNote(String uuid) {

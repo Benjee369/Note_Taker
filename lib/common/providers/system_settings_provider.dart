@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/common/database/system_settings_database.dart';
 import 'package:notes/common/models/system_settings_model.dart';

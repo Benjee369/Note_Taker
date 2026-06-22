@@ -19,7 +19,7 @@ class ThemeColorWidget extends StatelessWidget {
       children: [
         TextWidget(
           text: name,
-          textColor: systemSettings.getColor(name).withOpacity(0.9),
+          textColor: systemSettings.getColor(name).withValues(alpha: 0.9),
         ),
         SizedBox(
           width: 10,
