@@ -177,7 +177,14 @@ class _NoteScreenState extends State<NoteScreen> {
                 VerticalDivider(),
                 SizedBox(
                   width: 400,
-                  child: Markdown(data: noteProvider.noteModel?.content ?? ''),
+                  child: Markdown(
+                    data: noteProvider.noteModel?.content ?? '',
+                    selectable: true,
+                    styleSheet: MarkdownStyleSheet(
+                      textScaler:
+                          TextScaler.linear(fontSettings.fontSize * 0.07),
+                    ),
+                  ),
                 ),
               ],
             ),
