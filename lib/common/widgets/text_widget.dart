@@ -30,6 +30,7 @@ class TextWidget extends StatelessWidget {
         fontWeight: fontWeight,
         color: textColor,
         overflow: overFlow,
+        // height: 1.5
       ),
     );
   }

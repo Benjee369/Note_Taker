@@ -15,9 +15,6 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // context.read<SystemSettingsDatabase>().getSystemSettings();
-    });
   }
 
   @override
@@ -30,7 +27,9 @@ class _AppState extends State<App> {
             brightness: Brightness.light,
             scaffoldBackgroundColor: AppColors.white,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: AppColors.primaryColor,
+              seedColor: systemSettings.getColor(
+                systemSettings.systemSettingsModel.themeColorName,
+              ),
               brightness: Brightness.light,
             ),
             primaryColor: AppColors.black,
@@ -44,7 +43,9 @@ class _AppState extends State<App> {
             brightness: Brightness.dark,
             scaffoldBackgroundColor: AppColors.black,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: AppColors.primaryColor,
+              seedColor: systemSettings.getColor(
+                systemSettings.systemSettingsModel.themeColorName,
+              ),
               brightness: Brightness.dark,
             ),
             primaryColor: AppColors.white,

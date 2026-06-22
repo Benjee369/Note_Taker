@@ -13,6 +13,7 @@ class SystemSettingsProvider with ChangeNotifier {
     theme: false,
     viewMode: false,
     sideBarWidth: 400,
+    themeColorName: 'orange',
   );
   SystemSettingsModel get systemSettingsModel => _systemSettingsModel;
 
@@ -45,6 +46,32 @@ class SystemSettingsProvider with ChangeNotifier {
     if (shouldSave) {
       systemSettingsDatabase.setSystemSettings(updatedSettings);
     }
+    notifyListeners();
+  }
+
+  Color getColor(String name) {
+    switch (name) {
+      case 'orange':
+        return Color(0xFFF59E0B);
+      case 'green':
+        return Colors.green;
+      case 'blue':
+        return Colors.blue;
+      case 'red':
+        return Colors.red;
+      case 'purple':
+        return Colors.purple;
+      default:
+        return Colors.orange;
+    }
+  }
+
+  Future changeThemeColor(String colorName) async {
+    final updatedSettings = _systemSettingsModel.copyWith(
+      themeColorName: colorName,
+    );
+    _systemSettingsModel = updatedSettings;
+    systemSettingsDatabase.setSystemSettings(updatedSettings);
     notifyListeners();
   }
 

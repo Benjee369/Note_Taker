@@ -42,6 +42,7 @@ class NoteWidget extends StatelessWidget {
             EdgeInsets.fromLTRB(isInFolder ? 30 : 10, 1, isOpen ? 0 : 10, 1),
         padding: EdgeInsets.symmetric(
           vertical: 4,
+
           horizontal: 8,
         ),
         decoration: BoxDecoration(

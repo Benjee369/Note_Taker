@@ -10,11 +10,14 @@ class SystemSettingsModel {
   final bool viewMode;
   @JsonKey(defaultValue: 400)
   final double sideBarWidth;
+  @JsonKey(defaultValue: 'orange')
+  final String themeColorName;
 
   SystemSettingsModel({
     required this.theme,
     required this.viewMode,
     required this.sideBarWidth,
+    required this.themeColorName,
   });
 
   factory SystemSettingsModel.fromJson(Map<String, dynamic> json) =>
@@ -25,11 +28,13 @@ class SystemSettingsModel {
     bool? theme,
     bool? viewMode,
     double? sideBarWidth,
+    String? themeColorName,
   }) {
     return SystemSettingsModel(
       theme: theme ?? this.theme,
       viewMode: viewMode ?? this.viewMode,
       sideBarWidth: sideBarWidth ?? this.sideBarWidth,
+      themeColorName: themeColorName ?? this.themeColorName,
     );
   }
 }

@@ -170,6 +170,13 @@ class NoteProvider with ChangeNotifier {
     _folders.removeWhere((f) => f.uuid == folderUuid);
     _notes.removeWhere((n) => n.folderUuid == folderUuid);
     notifyListeners();
+
+    final notes = _notes
+        .where((n) => n.folderUuid == folderUuid)
+        .map((n) => n.uuid)
+        .toSet();
+    bulkDeleteNotes(notes);
+    folderDatabase.deleteFolder(folderUuid);
   }
 
   Future changeFolderName(

@@ -20,6 +20,7 @@ class Strings {
   //!Folder Actions
   static const String deleteFolder = "Delete folder";
   static const String changeName = "Change name";
+  static const String changeFolderName = "Change folder name";
 
   //!Dialogs
   static const String areYouSure = 'Are you sure you want to delete this note?';

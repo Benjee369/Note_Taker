@@ -337,6 +337,8 @@ class _HomeScreenState extends State<HomeScreen> {
       Strings.areYouSureManyFolder(noteCount),
       () async {
         await context.read<NoteProvider>().deleteFolder(folderUuid);
+        if(!mounted)return;
+        Navigator.pop(context);
       },
       () => Navigator.pop(context),
       Strings.ok,
@@ -347,10 +349,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void changeFolderName(
     FolderModel folder,
   ) async {
+    folderNameController.text = folder.name;
     Dialogs.dialog(
       context,
       [
-        TextWidget(text: 'Change folder name'),
+        TextWidget(text:Strings.changeFolderName),
         TextField(
           controller: folderNameController,
         ),
@@ -360,6 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   folder,
                   folderNameController.text,
                 );
+            folderNameController.clear();
             if (!mounted) return;
             Navigator.pop(context);
           },
