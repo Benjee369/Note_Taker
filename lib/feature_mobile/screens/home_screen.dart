@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:notes/common/models/folder_model.dart';
 import 'package:notes/common/providers/platform_provider.dart';
 import 'package:notes/common/providers/system_settings_provider.dart';
@@ -7,6 +8,7 @@ import 'package:notes/common/widgets/custom_popup_menu.dart';
 import 'package:notes/common/widgets/dialogs.dart';
 import 'package:notes/common/widgets/text_widget.dart';
 import 'package:notes/feature_computer/screens/computer_home_screen.dart';
+import 'package:notes/feature_mobile/screens/mobile_home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
@@ -43,11 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
       isPinned: false,
     );
     await context.read<NoteProvider>().saveNote(note);
-    if (!mounted) return;
-    Navigation.navigateTo(
-      context,
-      NoteScreen(),
-    );
+    if (isMobile) {
+      if (!mounted) return;
+      Navigation.navigateTo(
+        context,
+        NoteScreen(),
+      );
+    }
   }
 
   void openNote(NoteModel note) {
@@ -210,18 +214,10 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         selectedNotes.remove(note.uuid);
       });
-      log(
-        'removed note ${note.uuid} to selected list...',
-        name: 'SelectedNotes',
-      );
     } else {
       setState(() {
         selectedNotes.add(note.uuid);
       });
-      log(
-        'added note ${note.uuid} to selected list...',
-        name: 'SelectedNotes',
-      );
     }
   }
 
@@ -386,129 +382,70 @@ class _HomeScreenState extends State<HomeScreen> {
         final notesNFolders = notes.processNotesAndFolders();
         return SafeArea(
           child: isMobile
-              ? Scaffold(
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: () => createNewNote(),
-                    child: Icon(Icons.add),
-                  ),
-                  appBar: CustomAppBar(
-                    buttonType: AppBarButtonType.menuButton,
-                    title: Strings.notes,
-                    actions: [
-                      if (selectedNotes.isNotEmpty) ...[
-                        IconButton(
-                          onPressed: () => selectAndUnselectAll(),
-                          icon: Icon(Icons.select_all_rounded),
+              ? MobileHomeScreen(
+                  noteView: ListView.builder(
+                    itemCount: notesNFolders.length,
+                    itemBuilder: (context, index) {
+                      return NoteView(
+                        index: index,
+                        processedList: notesNFolders,
+                        selectedNotes: selectedNotes,
+                        onTap: (note) => openNote(note),
+                        onLongPress: (details, note) => onLongPress(
+                          note,
+                          details: details,
                         ),
-                        IconButton(
-                          onPressed: () => bulkDeleteNotes(),
-                          icon: Icon(Icons.delete_rounded),
-                        ),
-                      ]
-                    ],
-                  ),
-                  body: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      notes.notes.isEmpty
-                          ? const NoNoteWidget(
-                              message: Strings.addYourFirst,
-                              image: AppImages.noNotes,
-                            )
-                          : context
-                                  .watch<SystemSettingsProvider>()
-                                  .systemSettingsModel
-                                  .viewMode
-                              ? Expanded(
-                                  child: GridView.builder(
-                                    gridDelegate:
-                                        SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 200,
-                                      childAspectRatio: 1,
-                                    ),
-                                    itemCount: notesNFolders.length,
-                                    itemBuilder: (context, index) {
-                                      return NoteView(
-                                        index: index,
-                                        processedList: notesNFolders,
-                                        selectedNotes: selectedNotes,
-                                        onTap: (note) => openNote(note),
-                                        onLongPress: (details, note) =>
-                                            onLongPress(
-                                          note,
-                                          details: details,
-                                        ),
-                                        onSecondaryTap: (details, note) {
-                                          onLongPress(
-                                            note,
-                                            tapDownDetails: details,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                )
-                              : Expanded(
-                                  child: ListView.builder(
-                                    padding: EdgeInsets.all(10),
-                                    itemCount: notesNFolders.length,
-                                    itemBuilder: (context, index) {
-                                      return NoteView(
-                                        index: index,
-                                        processedList: notesNFolders,
-                                        selectedNotes: selectedNotes,
-                                        onTap: (note) => openNote(note),
-                                        onLongPress: (details, note) =>
-                                            onLongPress(
-                                          note,
-                                          details: details,
-                                        ),
-                                        onSecondaryTap: (details, note) {
-                                          onLongPress(
-                                            note,
-                                            tapDownDetails: details,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                    ],
-                  ),
-                  drawer: HomeDrawer(),
-                )
-              : GestureDetector(
-                  onTap: () {
-                    createFolder();
-                  },
-                  child: ComputerHomeScreen(
-                    noteView: ListView.builder(
-                      itemCount: notesNFolders.length,
-                      itemBuilder: (context, index) {
-                        return NoteView(
-                          index: index,
-                          processedList: notesNFolders,
-                          selectedNotes: selectedNotes,
-                          onTap: (note) => openNote(note),
-                          onLongPress: (details, note) => onLongPress(
+                        onSecondaryTap: (details, note) {
+                          onLongPress(
                             note,
-                            details: details,
-                          ),
-                          onSecondaryTap: (details, note) {
-                            onLongPress(
-                              note,
-                              tapDownDetails: details,
-                            );
-                          },
-                          onFolderSecondaryTap: (details, folder) =>
-                              onFolderLongPress(
-                            folder,
                             tapDownDetails: details,
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                        onFolderSecondaryTap: (details, folder) =>
+                            onFolderLongPress(
+                          folder,
+                          tapDownDetails: details,
+                        ),
+                      );
+                    },
                   ),
+                  createNewNote: createNewNote,
+                  selectAndUnselectAll: selectAndUnselectAll,
+                  bulkDeleteNotes: bulkDeleteNotes,
+                  selectedNotes: selectedNotes,
+                )
+              : ComputerHomeScreen(
+                  noteView: ListView.builder(
+                    itemCount: notesNFolders.length,
+                    itemBuilder: (context, index) {
+                      return NoteView(
+                        index: index,
+                        processedList: notesNFolders,
+                        selectedNotes: selectedNotes,
+                        onTap: (note) => openNote(note),
+                        onLongPress: (details, note) => onLongPress(
+                          note,
+                          details: details,
+                        ),
+                        onSecondaryTap: (details, note) {
+                          onLongPress(
+                            note,
+                            tapDownDetails: details,
+                          );
+                        },
+                        onFolderSecondaryTap: (details, folder) =>
+                            onFolderLongPress(
+                          folder,
+                          tapDownDetails: details,
+                        ),
+                      );
+                    },
+                  ),
+                  selectAndUnselectAll: selectAndUnselectAll,
+                  bulkDeleteNotes: bulkDeleteNotes,
+                  selectedNotes: selectedNotes,
+                  createNewNote: createNewNote,
+                  createFolder: createFolder,
                 ),
         );
       },
