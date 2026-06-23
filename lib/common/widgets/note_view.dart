@@ -27,6 +27,7 @@ class NoteView extends StatelessWidget {
 
   @override
   Widget build(context) {
+    void collapseFolder(){}
     final note = processedList[index];
 
     if (note is Folder) {
@@ -40,11 +41,17 @@ class NoteView extends StatelessWidget {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: TextWidget(
-            text: note.folderModel.name,
-            size: 20,
-            fontWeight: FontWeight.bold,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextWidget(
+                text: note.folderModel.name,
+                size: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              Icon(Icons.keyboard_arrow_down_rounded)
+            ],
           ),
         ),
       );

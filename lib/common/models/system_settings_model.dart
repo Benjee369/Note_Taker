@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'system_settings_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class SystemSettingsModel {
   @JsonKey(defaultValue: false)
   final bool theme;
@@ -14,7 +14,21 @@ class SystemSettingsModel {
   final double markDownWidth;
   @JsonKey(defaultValue: 'orange')
   final String themeColorName;
+  @JsonKey(fromJson: _noteFontSettingsFromJson)
   final NoteFontSettings noteFontSettings;
+
+  static NoteFontSettings _noteFontSettingsFromJson(
+      Map<String, dynamic>? json) {
+    if (json == null) {
+      return const NoteFontSettings(
+        fontSize: 16,
+        isFontWeighted: false,
+        fontHeight: 1.2,
+      );
+    }
+
+    return NoteFontSettings.fromJson(json);
+  }
 
   SystemSettingsModel({
     required this.theme,
@@ -57,7 +71,7 @@ class NoteFontSettings {
   @JsonKey(defaultValue: 1.2)
   final double fontHeight;
 
-  NoteFontSettings({
+  const NoteFontSettings({
     required this.fontSize,
     required this.isFontWeighted,
     required this.fontHeight,

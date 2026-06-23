@@ -12,8 +12,8 @@ SystemSettingsModel _$SystemSettingsModelFromJson(Map<String, dynamic> json) =>
       viewMode: json['viewMode'] as bool? ?? false,
       sideBarWidth: (json['sideBarWidth'] as num?)?.toDouble() ?? 400,
       themeColorName: json['themeColorName'] as String? ?? 'orange',
-      noteFontSettings: NoteFontSettings.fromJson(
-          json['noteFontSettings'] as Map<String, dynamic>),
+      noteFontSettings: SystemSettingsModel._noteFontSettingsFromJson(
+          json['noteFontSettings'] as Map<String, dynamic>?),
       markDownWidth: (json['markDownWidth'] as num?)?.toDouble() ?? 200,
     );
 
@@ -25,7 +25,7 @@ Map<String, dynamic> _$SystemSettingsModelToJson(
       'sideBarWidth': instance.sideBarWidth,
       'markDownWidth': instance.markDownWidth,
       'themeColorName': instance.themeColorName,
-      'noteFontSettings': instance.noteFontSettings,
+      'noteFontSettings': instance.noteFontSettings.toJson(),
     };
 
 NoteFontSettings _$NoteFontSettingsFromJson(Map<String, dynamic> json) =>

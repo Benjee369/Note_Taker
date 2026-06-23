@@ -1,9 +1,6 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:notes/common/models/folder_model.dart';
 import 'package:notes/common/providers/platform_provider.dart';
-import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/common/widgets/custom_popup_menu.dart';
 import 'package:notes/common/widgets/dialogs.dart';
 import 'package:notes/common/widgets/text_widget.dart';
@@ -12,13 +9,9 @@ import 'package:notes/feature_mobile/screens/mobile_home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../common/navigation/navigation.dart';
-import '../../common/widgets/custom_app_bar.dart';
-import '../../common/widgets/no_note_widget.dart';
-import '../../constants/app_images.dart';
 import '../../constants/strings.dart';
 import '../../common/models/note_model.dart';
 import '../../common/providers/note_provider.dart';
-import '../widgets/home_drawer.dart';
 import '../../common/widgets/note_view.dart';
 import 'note_screen.dart';
 
@@ -112,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
         PopupMenuItemData(
           value: 5,
           icon: Icons.create_new_folder_rounded,
-          label: 'Add to folder',
+          label: Strings.addToFolder
         ),
       ],
       onSelected: (value) {
@@ -269,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Dialogs.dialog(
       context,
       [
-        TextWidget(text: 'Folder name'),
+        TextWidget(text: Strings.folderName),
         TextField(
           controller: folderNameController,
         ),

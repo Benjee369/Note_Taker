@@ -16,11 +16,14 @@ class Strings {
   static const String delete = 'Delete';
   static const String duplicate = 'Duplicate';
   static const String select = 'Select';
+  static const String addToFolder = 'Add to folder';
+
 
   //!Folder Actions
   static const String deleteFolder = "Delete folder";
   static const String changeName = "Change name";
   static const String changeFolderName = "Change folder name";
+  static const String folderName = "Folder name";
 
   //!Dialogs
   static const String areYouSure = 'Are you sure you want to delete this note?';

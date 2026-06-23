@@ -146,6 +146,7 @@ class _NoteScreenState extends State<NoteScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Consumer2<NoteProvider, SystemSettingsProvider>(
       builder: (
@@ -185,11 +186,13 @@ class _NoteScreenState extends State<NoteScreen>
                 builder: (context, child) {
                   final currentDrawerWidth = Tween<double>(
                     begin: _collapsedWidth,
-                    end: systemSettingProvider.systemSettingsModel.markDownWidth,
+                    end:
+                        systemSettingProvider.systemSettingsModel.markDownWidth,
                   ).evaluate(_drawerAnimation);
 
                   return Stack(
                     children: [
+                      //!Text area
                       Positioned(
                         right: currentDrawerWidth,
                         left: 0,
@@ -216,6 +219,8 @@ class _NoteScreenState extends State<NoteScreen>
                           maxLines: 1000,
                         ),
                       ),
+
+                      //!Markdown side
                       Positioned(
                         right: 0,
                         top: 0,
@@ -225,11 +230,16 @@ class _NoteScreenState extends State<NoteScreen>
                           data: noteProvider.noteModel?.content ?? '',
                           selectable: true,
                           styleSheet: MarkdownStyleSheet(
+                            p: TextStyle(
+                              color: textTheme.bodyLarge?.color ?? Colors.black,
+                            ),
                             textScaler:
                                 TextScaler.linear(fontSettings.fontSize * 0.07),
                           ),
                         ),
                       ),
+
+                      //!Divider
                       Positioned(
                         right: currentDrawerWidth - 15,
                         top: 0,

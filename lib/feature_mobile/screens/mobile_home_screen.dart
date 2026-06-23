@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../common/providers/note_provider.dart';
-import '../../common/providers/system_settings_provider.dart';
 import '../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/no_note_widget.dart';
-import '../../common/widgets/note_view.dart';
 import '../../constants/app_images.dart';
 import '../../constants/strings.dart';
 import '../widgets/home_drawer.dart';
