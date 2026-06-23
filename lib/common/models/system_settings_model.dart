@@ -10,6 +10,8 @@ class SystemSettingsModel {
   final bool viewMode;
   @JsonKey(defaultValue: 400)
   final double sideBarWidth;
+  @JsonKey(defaultValue: 200)
+  final double markDownWidth;
   @JsonKey(defaultValue: 'orange')
   final String themeColorName;
   final NoteFontSettings noteFontSettings;
@@ -20,6 +22,7 @@ class SystemSettingsModel {
     required this.sideBarWidth,
     required this.themeColorName,
     required this.noteFontSettings,
+    required this.markDownWidth,
   });
 
   factory SystemSettingsModel.fromJson(Map<String, dynamic> json) =>
@@ -30,6 +33,7 @@ class SystemSettingsModel {
     bool? theme,
     bool? viewMode,
     double? sideBarWidth,
+    double? markDownWidth,
     String? themeColorName,
     NoteFontSettings? noteFontSettings,
   }) {
@@ -39,6 +43,7 @@ class SystemSettingsModel {
       sideBarWidth: sideBarWidth ?? this.sideBarWidth,
       themeColorName: themeColorName ?? this.themeColorName,
       noteFontSettings: noteFontSettings ?? this.noteFontSettings,
+      markDownWidth: markDownWidth ?? this.markDownWidth,
     );
   }
 }

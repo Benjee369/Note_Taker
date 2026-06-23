@@ -37,7 +37,6 @@ class _ComputerHomeScreenState extends State<ComputerHomeScreen>
   bool _isDrawerOpen = true;
   final uuid = Uuid();
 
-  // double _targetDrawerWidth = 300.0;
   final double _collapsedWidth = 0.0;
   bool _isHovered = false;
 

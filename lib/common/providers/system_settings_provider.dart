@@ -12,6 +12,7 @@ class SystemSettingsProvider with ChangeNotifier {
     theme: false,
     viewMode: false,
     sideBarWidth: 400,
+    markDownWidth: 200,
     themeColorName: 'orange',
     noteFontSettings: NoteFontSettings(
       fontSize: 16,
@@ -45,6 +46,20 @@ class SystemSettingsProvider with ChangeNotifier {
   }) {
     final updatedSettings = _systemSettingsModel.copyWith(
       sideBarWidth: width,
+    );
+    _systemSettingsModel = updatedSettings;
+    if (shouldSave) {
+      systemSettingsDatabase.setSystemSettings(updatedSettings);
+    }
+    notifyListeners();
+  }
+
+  void setMarkDownWidth(
+    double width, {
+    bool shouldSave = true,
+  }) {
+    final updatedSettings = _systemSettingsModel.copyWith(
+      markDownWidth: width,
     );
     _systemSettingsModel = updatedSettings;
     if (shouldSave) {
