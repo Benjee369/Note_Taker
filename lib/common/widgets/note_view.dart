@@ -27,7 +27,7 @@ class NoteView extends StatelessWidget {
 
   @override
   Widget build(context) {
-    void collapseFolder(){}
+    // void collapseFolder(){}
     final note = processedList[index];
 
     if (note is Folder) {
