@@ -103,10 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
           label: Strings.delete,
         ),
         PopupMenuItemData(
-          value: 5,
-          icon: Icons.create_new_folder_rounded,
-          label: Strings.addToFolder
-        ),
+            value: 5,
+            icon: Icons.create_new_folder_rounded,
+            label: Strings.addToFolder),
       ],
       onSelected: (value) {
         switch (value) {
@@ -253,12 +252,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final folderNameController = TextEditingController();
 
   void createFolder() async {
-    final id = uuid.v4();
-    final folder = FolderModel(
-      uuid: id,
-      name: folderNameController.text,
-      createdDate: now,
-    );
     Dialogs.dialog(
       context,
       [
@@ -268,6 +261,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         IconButton(
           onPressed: () async {
+            final id = uuid.v4();
+            final folder = FolderModel(
+              uuid: id,
+              name: folderNameController.text,
+              createdDate: now,
+            );
             await context.read<NoteProvider>().createFolder(folder);
             if (!mounted) return;
             folderNameController.clear();
