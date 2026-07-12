@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes/common/database/folder_database.dart';
+import 'package:notes/common/database/note_preview_database.dart';
 import 'package:notes/common/database/system_settings_database.dart';
 import 'package:notes/common/providers/system_settings_provider.dart';
 import 'package:notes/core/app.dart';
@@ -20,6 +21,7 @@ class ProviderLayer extends StatelessWidget {
         Provider(create: (_) => OpenNoteDatabase()),
         Provider(create: (_) => SystemSettingsDatabase()),
         Provider(create: (_) => FolderDatabase()),
+        Provider(create: (_) => PreviewDatabase()),
         ChangeNotifierProvider(
           create: (context) => SettingsTabIndexProvider(),
         ),
@@ -33,6 +35,7 @@ class ProviderLayer extends StatelessWidget {
             context.read<NoteDatabase>(),
             context.read<OpenNoteDatabase>(),
             context.read<FolderDatabase>(),
+            context.read<PreviewDatabase>(),
           ),
         ),
       ],

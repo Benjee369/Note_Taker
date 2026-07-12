@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes/common/providers/platform_provider.dart';
 import 'package:provider/provider.dart';
+import '../models/note_preview_model.dart';
 import 'text_widget.dart';
 import '../../constants/app_sizes.dart';
-import '../models/note_model.dart';
 import '../providers/note_provider.dart';
 
 class NoteWidget extends StatelessWidget {
-  final NoteModel note;
+  final NotePreviewModel note;
   final bool isSelected;
   final bool isInFolder;
 
@@ -105,7 +105,7 @@ class NoteWidget extends StatelessWidget {
                     SizedBox(
                       width: size.width * 0.8,
                       child: TextWidget(
-                        text: note.content,
+                        text: note.contentPreview,
                         fontWeight: FontWeight.bold,
                         maxLines: 1,
                         overFlow: TextOverflow.ellipsis,

@@ -32,8 +32,11 @@ class _NoteScreenState extends State<NoteScreen>
   late AnimationController _animationController;
   late Animation<double> _drawerAnimation;
   final _uuid = Uuid().v4();
+  final ScrollController notesScrollController = ScrollController();
+  final ScrollController markdownScrollController = ScrollController();
   Timer? _debouncer;
   final double _collapsedWidth = 0.0;
+  double scrollControllerMultiplier = 0.0;
   bool _isHovered = false;
 
   Future saveNote() async {
@@ -47,6 +50,7 @@ class _NoteScreenState extends State<NoteScreen>
       createdDate: isNew ? now : noteProvider!.createdDate,
       updatedDate: now,
       isPinned: noteProvider?.isPinned ?? false,
+      folderUuid: noteProvider?.folderUuid,
     );
     await context.read<NoteProvider>().saveNote(note);
   }
@@ -62,6 +66,7 @@ class _NoteScreenState extends State<NoteScreen>
       createdDate: isNew ? now : noteProvider!.createdDate,
       updatedDate: now,
       isPinned: noteProvider?.isPinned ?? false,
+      folderUuid: noteProvider?.folderUuid,
     );
     context.read<NoteProvider>().quickSaveNote(
           note,
@@ -80,9 +85,54 @@ class _NoteScreenState extends State<NoteScreen>
     Navigator.pop(context);
   }
 
+  bool _isScrollingNotes = false;
+  bool _isScrollingMarkdown = false;
+
   @override
   void initState() {
     super.initState();
+
+    notesScrollController.addListener(() {
+      // If markdown is driving the scroll, ignore this event to prevent loops
+      if (_isScrollingMarkdown) return;
+
+      _isScrollingNotes = true;
+      try {
+        if (markdownScrollController.hasClients) {
+          double targetOffset = notesScrollController.offset *
+              (scrollControllerMultiplier * 0.01);
+
+          if (targetOffset >
+              markdownScrollController.position.maxScrollExtent) {
+            targetOffset = markdownScrollController.position.maxScrollExtent;
+          }
+
+          markdownScrollController.jumpTo(targetOffset);
+        }
+      } finally {
+        _isScrollingNotes = false;
+      }
+    });
+
+    markdownScrollController.addListener(() {
+      if (_isScrollingNotes) return;
+
+      _isScrollingMarkdown = true;
+      try {
+        if (notesScrollController.hasClients) {
+          double targetOffset = markdownScrollController.offset;
+
+          if (targetOffset > notesScrollController.position.maxScrollExtent) {
+            targetOffset = notesScrollController.position.maxScrollExtent;
+          }
+
+          notesScrollController.jumpTo(targetOffset);
+        }
+      } finally {
+        _isScrollingMarkdown = false;
+      }
+    });
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
@@ -136,6 +186,8 @@ class _NoteScreenState extends State<NoteScreen>
 
   @override
   void dispose() {
+    notesScrollController.dispose();
+    markdownScrollController.dispose();
     _animationController.dispose();
     _noteController.dispose();
     _debouncer?.cancel();
@@ -190,6 +242,7 @@ class _NoteScreenState extends State<NoteScreen>
                         systemSettingProvider.systemSettingsModel.markDownWidth,
                   ).evaluate(_drawerAnimation);
 
+                  scrollControllerMultiplier = currentDrawerWidth;
                   return Stack(
                     children: [
                       //!Text area
@@ -199,6 +252,7 @@ class _NoteScreenState extends State<NoteScreen>
                         top: 0,
                         bottom: 0,
                         child: TextField(
+                          scrollController: notesScrollController,
                           onChanged: (text) => onTypingChange(text),
                           controller: _noteController,
                           decoration: InputDecoration(
@@ -227,6 +281,7 @@ class _NoteScreenState extends State<NoteScreen>
                         bottom: 0,
                         width: currentDrawerWidth,
                         child: Markdown(
+                          controller: markdownScrollController,
                           data: noteProvider.noteModel?.content ?? '',
                           selectable: true,
                           styleSheet: MarkdownStyleSheet(

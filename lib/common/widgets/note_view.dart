@@ -1,37 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:notes/common/models/folder_model.dart';
-import 'package:notes/common/providers/note_provider.dart';
+import 'package:notes/common/models/note_preview_model.dart';
 import 'note_widget.dart';
 import 'text_widget.dart';
-import '../models/note_model.dart';
+import '../providers/note_provider.dart';
 
 class NoteView extends StatelessWidget {
   final int index;
   final List<Universal> processedList;
   final Set<String> selectedNotes;
-  final Function(LongPressStartDetails, NoteModel)? onLongPress;
-  final Function(TapDownDetails, NoteModel)? onSecondaryTap;
+  final Set<String> collapsedFolderUuids;
+  final Function(LongPressStartDetails, NotePreviewModel)? onLongPress;
+  final Function(TapDownDetails, NotePreviewModel)? onSecondaryTap;
   final Function(TapDownDetails, FolderModel)? onFolderSecondaryTap;
-  final Function(NoteModel) onTap;
+  final Function(NotePreviewModel) onTap;
+  final Function(FolderModel)? onFolderTap;
 
   const NoteView({
     super.key,
     required this.index,
     required this.processedList,
     required this.selectedNotes,
+    required this.collapsedFolderUuids,
     this.onLongPress,
     this.onSecondaryTap,
     required this.onTap,
     this.onFolderSecondaryTap,
+    this.onFolderTap,
   });
 
   @override
-  Widget build(context) {
-    // void collapseFolder(){}
+  Widget build(BuildContext context) {
     final note = processedList[index];
 
     if (note is Folder) {
       final f = note.folderModel;
+      final isCollapsed = collapsedFolderUuids.contains(f.uuid);
 
       return InkWell(
         onSecondaryTapDown: (details) {
@@ -40,27 +44,32 @@ class NoteView extends StatelessWidget {
             f,
           );
         },
+        onTap: () => onFolderTap?.call(f),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextWidget(
-                text: note.folderModel.name,
+                text: f.name,
                 size: 20,
                 fontWeight: FontWeight.bold,
               ),
-              Icon(Icons.keyboard_arrow_down_rounded)
+              Icon(
+                isCollapsed
+                    ? Icons.keyboard_arrow_down_rounded
+                    : Icons.keyboard_arrow_up_rounded,
+              )
             ],
           ),
         ),
       );
     }
-
-    if (note is ActualNote) {
-      final n = note.noteModel;
+    if (note is PreviewNote) {
+      final n = note.previewModel;
       final selected = selectedNotes.contains(n.uuid);
-      final isInFolder = note.noteModel.folderUuid != null;
+      final isInFolder = n.folderUuid != null;
+
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onLongPressStart: (details) => onLongPress?.call(

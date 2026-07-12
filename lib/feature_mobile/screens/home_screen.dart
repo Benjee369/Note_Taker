@@ -8,6 +8,7 @@ import 'package:notes/feature_computer/screens/computer_home_screen.dart';
 import 'package:notes/feature_mobile/screens/mobile_home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import '../../common/models/note_preview_model.dart';
 import '../../common/navigation/navigation.dart';
 import '../../constants/strings.dart';
 import '../../common/models/note_model.dart';
@@ -32,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final id = uuid.v4();
     final note = NoteModel(
       uuid: id,
-      content: '',
+      content: 'New Note',
       createdDate: now,
       updatedDate: now,
       isPinned: false,
@@ -47,18 +48,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void openNote(NoteModel note) {
+  void openNote(NotePreviewModel note) {
     if (selectedNotes.isNotEmpty) {
       selectNote(note);
     } else {
-      context.read<NoteProvider>().setOpenNote(note.uuid);
-      if (!mounted) return;
-      isMobile
-          ? Navigation.navigateTo(
-              context,
-              NoteScreen(),
-            )
-          : null;
+      context.read<NoteProvider>().setOpenNote(note.uuid).then((_) {
+        if (!mounted) return;
+        isMobile
+            ? Navigation.navigateTo(
+                context,
+                NoteScreen(),
+              )
+            : null;
+      });
     }
   }
 
@@ -66,12 +68,22 @@ class _HomeScreenState extends State<HomeScreen> {
     final noteProvider = context.read<NoteProvider>();
     final isOpen = await noteProvider.checkOpenNote();
     if (isOpen && isMobile) {
-      openNote(noteProvider.noteModel!);
+      final note = noteProvider.noteModel!;
+      final preview = NotePreviewModel(
+        uuid: note.uuid,
+        createdDate: note.createdDate,
+        contentPreview: note.content.length > 30
+            ? note.content.substring(0, 30)
+            : note.content,
+        folderUuid: note.folderUuid,
+        isPinned: note.isPinned,
+      );
+      openNote(preview);
     }
   }
 
   void onLongPress(
-    NoteModel note, {
+    NotePreviewModel note, {
     LongPressStartDetails? details,
     TapDownDetails? tapDownDetails,
   }) {
@@ -132,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void addToFolder(
-    NoteModel note,
+    NotePreviewModel note,
     Offset position,
   ) {
     final folders = context.read<NoteProvider>().folders;
@@ -152,18 +164,18 @@ class _HomeScreenState extends State<HomeScreen> {
       onSelected: (value) async {
         final folder = folders[value];
         await context.read<NoteProvider>().addToFolder(
-              note,
+              note.uuid,
               folder.uuid,
             );
       },
     );
   }
 
-  void pin(NoteModel note) {
+  void pin(NotePreviewModel note) {
     if (note.isPinned) {
-      context.read<NoteProvider>().setPinned(note, false);
+      context.read<NoteProvider>().setPinned(note.uuid, false);
     } else {
-      context.read<NoteProvider>().setPinned(note, true);
+      context.read<NoteProvider>().setPinned(note.uuid, true);
     }
   }
 
@@ -187,21 +199,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void duplicateNote(NoteModel originalNote) {
-    final duplicateUuid = Uuid().v4();
-
-    final duplicateNote = NoteModel(
-      uuid: duplicateUuid,
-      content: originalNote.content,
-      createdDate: originalNote.createdDate,
-      updatedDate: originalNote.updatedDate,
-      isPinned: originalNote.isPinned,
-    );
-
-    context.read<NoteProvider>().saveNote(duplicateNote);
+  void duplicateNote(NotePreviewModel originalNote) {
+    context.read<NoteProvider>().duplicateNote(originalNote.uuid);
   }
 
-  void selectNote(NoteModel note) {
+  void selectNote(NotePreviewModel note) {
     if (selectedNotes.contains(note.uuid)) {
       setState(() {
         selectedNotes.remove(note.uuid);
@@ -231,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void selectAndUnselectAll() {
-    final notes = context.read<NoteProvider>().notes;
+    final notes = context.read<NoteProvider>().previews;
     if (selectedNotes.length == notes.length) {
       setState(() {
         selectedNotes.clear();
@@ -315,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future deleteFolder(String folderUuid) async {
     final noteProvider = context.read<NoteProvider>();
-    final noteCount = noteProvider.notes
+    final noteCount = noteProvider.previews
         .where(
           (n) => n.folderUuid == folderUuid,
         )
@@ -382,6 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         index: index,
                         processedList: notesNFolders,
                         selectedNotes: selectedNotes,
+                        collapsedFolderUuids: notes.collapsedFolderUuids,
                         onTap: (note) => openNote(note),
                         onLongPress: (details, note) => onLongPress(
                           note,
@@ -398,6 +401,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           folder,
                           tapDownDetails: details,
                         ),
+                        onFolderTap: (folder) {
+                          notes.toggleFolderCollapse(folder.uuid);
+                        },
                       );
                     },
                   ),
@@ -414,6 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         index: index,
                         processedList: notesNFolders,
                         selectedNotes: selectedNotes,
+                        collapsedFolderUuids: notes.collapsedFolderUuids,
                         onTap: (note) => openNote(note),
                         onLongPress: (details, note) => onLongPress(
                           note,
@@ -430,6 +437,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           folder,
                           tapDownDetails: details,
                         ),
+                        onFolderTap: (folder) {
+                          notes.toggleFolderCollapse(folder.uuid);
+                        },
                       );
                     },
                   ),

@@ -1,6 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
+import 'package:notes/common/database/note_preview_database.dart';
 import 'package:notes/common/models/folder_model.dart';
+import 'package:notes/common/models/note_preview_model.dart';
+import 'package:uuid/uuid.dart';
 import '../database/folder_database.dart';
 import '../database/note_database.dart';
 import '../database/open_note_database.dart';
@@ -9,41 +12,57 @@ import '../models/note_model.dart';
 class NoteProvider with ChangeNotifier {
   final NoteDatabase noteDatabase;
   final OpenNoteDatabase openNoteDatabase;
+  final PreviewDatabase previewDatabase;
   final FolderDatabase folderDatabase;
 
   NoteProvider(
     this.noteDatabase,
     this.openNoteDatabase,
     this.folderDatabase,
+    this.previewDatabase,
   ) {
     getNotes();
   }
 
   List<NoteModel> _notes = [];
+  List<NotePreviewModel> _previews = [];
   // bool _isGettingNotes = false;
   NoteModel? _noteModel;
 
   List<NoteModel> get notes => _notes;
+  List<NotePreviewModel> get previews => _previews;
   // bool get isGettingNotes => _isGettingNotes;
   NoteModel? get noteModel => _noteModel;
 
   List<FolderModel> _folders = [];
   List<FolderModel> get folders => _folders;
 
+  final Set<String> _collapsedFolderUuids = {};
+  Set<String> get collapsedFolderUuids => _collapsedFolderUuids;
+
+  void toggleFolderCollapse(String folderUuid) {
+    if (_collapsedFolderUuids.contains(folderUuid)) {
+      _collapsedFolderUuids.remove(folderUuid);
+    } else {
+      _collapsedFolderUuids.add(folderUuid);
+    }
+    notifyListeners();
+  }
+
   void clearNotes() {
     _notes = [];
     notifyListeners();
   }
 
-  void setOpenNote(String uuid) {
-    getSingleNote(uuid);
-    openNoteDatabase.setOpenNote(uuid);
+  Future<void> setOpenNote(String uuid) async {
+    await getSingleNote(uuid);
+    await openNoteDatabase.setOpenNote(uuid);
   }
 
   Future<bool> checkOpenNote() async {
     final noteUuid = await openNoteDatabase.getOpenNote();
     if (noteUuid != null) {
-      getSingleNote(noteUuid);
+      await getSingleNote(noteUuid);
       return true;
     } else {
       return false;
@@ -65,10 +84,29 @@ class NoteProvider with ChangeNotifier {
     } else {
       _notes[index] = note;
     }
+
+    final previewIndex = _previews.indexWhere((p) => p.uuid == note.uuid);
+    final newPreview = NotePreviewModel(
+      uuid: note.uuid,
+      createdDate: note.createdDate,
+      contentPreview: note.content.length > 30
+          ? note.content.substring(0, 30)
+          : note.content,
+      folderUuid: note.folderUuid,
+      isPinned: note.isPinned,
+    );
+
+    if (previewIndex == -1) {
+      _previews.add(newPreview);
+    } else {
+      _previews[previewIndex] = newPreview;
+    }
+
     notifyListeners();
 
+    await previewDatabase.saveNotePreview(note);
     await noteDatabase.saveNote(note);
-    setOpenNote(note.uuid);
+    await setOpenNote(note.uuid);
   }
 
   void quickSaveNote(NoteModel note, String content) {
@@ -77,14 +115,17 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void getSingleNote(String uuid) {
+  Future<void> getSingleNote(String uuid) async {
     final index = _notes.indexWhere(
       (n) => n.uuid == uuid,
     );
-    if (index == -1) {
-      _noteModel = null;
-    } else {
+    if (index != -1) {
       _noteModel = _notes[index];
+    } else {
+      _noteModel = await noteDatabase.getSingleNote(uuid);
+      if (_noteModel != null) {
+        _notes.add(_noteModel!);
+      }
     }
     notifyListeners();
   }
@@ -95,31 +136,46 @@ class NoteProvider with ChangeNotifier {
       name: 'NoteProvider',
     );
 
-    _notes = await noteDatabase.getNotes();
+    // _notes = await noteDatabase.getNotes();
+    _previews = await previewDatabase.getNotesPreview();
     _folders = await folderDatabase.getFolders();
     notifyListeners();
   }
 
   Future<void> setPinned(
-    NoteModel note,
+    String uuid,
     bool pinned,
   ) async {
-    final updated = note.copyWith(
-      isPinned: pinned,
-    );
-    final index = _notes.indexWhere(
-      (n) => n.uuid == updated.uuid,
-    );
-    if (index != -1) {
-      _notes[index] = updated;
+    final previewIndex = _previews.indexWhere((p) => p.uuid == uuid);
+    if (previewIndex != -1) {
+      final oldPreview = _previews[previewIndex];
+      _previews[previewIndex] = NotePreviewModel(
+        uuid: oldPreview.uuid,
+        createdDate: oldPreview.createdDate,
+        contentPreview: oldPreview.contentPreview,
+        folderUuid: oldPreview.folderUuid,
+        isPinned: pinned,
+      );
+      notifyListeners();
     }
-    notifyListeners();
-    await noteDatabase.saveNote(updated);
+
+    final note = await noteDatabase.getSingleNote(uuid);
+    if (note != null) {
+      final updated = note.copyWith(isPinned: pinned);
+
+      final index = _notes.indexWhere((n) => n.uuid == uuid);
+      if (index != -1) {
+        _notes[index] = updated;
+      }
+
+      await noteDatabase.saveNote(updated);
+      await previewDatabase.saveNotePreview(updated);
+    }
   }
 
   Future bulkDeleteNotes(Set<String> uuids) async {
     for (String uuid in uuids) {
-      deleteNote(
+      await deleteNote(
         uuid,
         shouldRefresh: false,
       );
@@ -133,8 +189,13 @@ class NoteProvider with ChangeNotifier {
     _notes.removeWhere(
       (n) => n.uuid == uuid,
     );
+    _previews.removeWhere(
+      (n) => n.uuid == uuid,
+    );
     notifyListeners();
-    noteDatabase.deleteNote(uuid);
+    await noteDatabase.deleteNote(uuid);
+    await previewDatabase.deleteNote(uuid);
+
     if (_noteModel?.uuid == uuid) {
       clearOpenNote();
     }
@@ -162,27 +223,41 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> addToFolder(
-    NoteModel note,
-    String folderUuid,
+    String noteUuid,
+    String? folderUuid,
   ) async {
-    final updatedNote = note.copyWith(
-      folderUuid: folderUuid,
-    );
-    await saveNote(updatedNote);
-    notifyListeners();
+    final previewIndex = _previews.indexWhere((p) => p.uuid == noteUuid);
+    if (previewIndex != -1) {
+      final oldPreview = _previews[previewIndex];
+      _previews[previewIndex] = NotePreviewModel(
+        uuid: oldPreview.uuid,
+        createdDate: oldPreview.createdDate,
+        contentPreview: oldPreview.contentPreview,
+        folderUuid: folderUuid,
+        isPinned: oldPreview.isPinned,
+      );
+      notifyListeners();
+    }
+
+    final note = await noteDatabase.getSingleNote(noteUuid);
+    if (note != null) {
+      final updated = note.copyWith(folderUuid: folderUuid);
+      await saveNote(updated);
+    }
   }
 
   Future deleteFolder(String folderUuid) async {
-    _folders.removeWhere((f) => f.uuid == folderUuid);
-    _notes.removeWhere((n) => n.folderUuid == folderUuid);
-    notifyListeners();
-
-    final notes = _notes
+    final noteUuids = _previews
         .where((n) => n.folderUuid == folderUuid)
         .map((n) => n.uuid)
         .toSet();
-    bulkDeleteNotes(notes);
-    folderDatabase.deleteFolder(folderUuid);
+
+    await bulkDeleteNotes(noteUuids);
+
+    _folders.removeWhere((f) => f.uuid == folderUuid);
+    notifyListeners();
+
+    await folderDatabase.deleteFolder(folderUuid);
   }
 
   Future changeFolderName(
@@ -203,21 +278,41 @@ class NoteProvider with ChangeNotifier {
     await folderDatabase.saveFolder(updatedFolder);
   }
 
+  Future<void> duplicateNote(String uuid) async {
+    final originalNote = await noteDatabase.getSingleNote(uuid);
+    if (originalNote != null) {
+      final now = DateTime.now();
+      const uuidGen = Uuid();
+      final duplicateUuid = uuidGen.v4();
+      final duplicateNote = NoteModel(
+        uuid: duplicateUuid,
+        content: originalNote.content,
+        createdDate: now,
+        updatedDate: now,
+        isPinned: originalNote.isPinned,
+        folderUuid: originalNote.folderUuid,
+      );
+      await saveNote(duplicateNote);
+    }
+  }
+
   List<Universal> processNotesAndFolders() {
     List<Universal> processed = [];
     for (final folder in _folders) {
       processed.add(Folder(folder));
 
-      processed.addAll(
-        _notes.where((n) => n.folderUuid == folder.uuid).map(
-              (n) => ActualNote(n),
-            ),
-      );
+      if (!_collapsedFolderUuids.contains(folder.uuid)) {
+        processed.addAll(
+          _previews.where((n) => n.folderUuid == folder.uuid).map(
+                (n) => PreviewNote(n),
+              ),
+        );
+      }
     }
 
     processed.addAll(
-      _notes.where((n) => n.folderUuid == null).map(
-            (n) => ActualNote(n),
+      _previews.where((n) => n.folderUuid == null).map(
+            (n) => PreviewNote(n),
           ),
     );
     return processed;
@@ -231,7 +326,7 @@ class Folder extends Universal {
   Folder(this.folderModel);
 }
 
-class ActualNote extends Universal {
-  final NoteModel noteModel;
-  ActualNote(this.noteModel);
+class PreviewNote extends Universal {
+  final NotePreviewModel previewModel;
+  PreviewNote(this.previewModel);
 }

@@ -5,6 +5,7 @@ import 'package:notes/core/provider_layer.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  await Hive.deleteFromDisk();
   runApp(
     const ProviderLayer(),
   );

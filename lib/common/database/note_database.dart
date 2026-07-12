@@ -38,10 +38,6 @@ class NoteDatabase {
             ),
           )
           .toList();
-      log(
-        'got (${notes.length})list of notes $notes...',
-        name: 'NoteDatabase',
-      );
       return notes;
     }
     log(
